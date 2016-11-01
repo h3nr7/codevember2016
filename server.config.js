@@ -46,6 +46,7 @@ switch(process.env.NODE_ENV) {
     }
     break
   case 'production':
+    config.port = process.env.PORT || 3000
     config.env = {
       timeout: '60s'
     }
