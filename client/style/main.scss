@@ -1,0 +1,12 @@
+@import 'style/_colors.scss';
+
+
+body {
+  display: flex;
+}
+
+#app {
+  &__container {
+    display: block;
+  }
+}
