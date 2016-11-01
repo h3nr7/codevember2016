@@ -1,3 +1,6 @@
+if (process.env.NODE_ENV !== 'test') return
+
+
 const gulp = require('gulp');
 const runSequence = require('run-sequence');
 
