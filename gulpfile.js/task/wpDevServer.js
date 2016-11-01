@@ -1,3 +1,5 @@
+if (process.env.NODE_ENV !== 'local') return
+
 const gulp          = require('gulp')
 const gutil         = require('gulp-util')
 const WpDevServer   = require('webpack-dev-server')

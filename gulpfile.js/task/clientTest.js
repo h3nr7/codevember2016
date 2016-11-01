@@ -1,3 +1,5 @@
+if (process.env.NODE_ENV !== 'test') return
+
 const gulp          = require('gulp')
 const GMocha        = require('gulp-mocha')
 const serverConfig  = require('server.config.js')
