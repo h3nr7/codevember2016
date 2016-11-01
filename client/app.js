@@ -4,17 +4,20 @@ import urljoin                    from 'url-join'
 import { Router,
          applyRouterMiddleware }  from 'react-router'
 import { Provider }               from 'react-redux'
-import { stores, history }          from 'stores'
+import { stores, history }        from 'stores'
 import { createHistory,
          useBasename }            from 'history'
+import combineRoutes              from 'routes'
+import RootWrapper                from 'wrapper/RootWrapper'
 
-import RootWrapper from 'wrapper/RootWrapper'
+
+console.log('kaka', combineRoutes)
 
 const rootRoutes = {
   path: '/',
   // indexRoute: { onEnter: (nextState, replace) => replace(urljoin(nextState.location.pathname, 'home')) },
   component: RootWrapper,
-  // childRoutes: combineRoutes
+  childRoutes: combineRoutes
 }
 
 
