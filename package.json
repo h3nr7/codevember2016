@@ -33,6 +33,7 @@
     "webpack-dev-server": "^1.16.2"
   },
   "dependencies": {
+    "gulp-mocha": "^3.0.1",
     "app-module-path": "^2.1.0",
     "body-parser": "^1.15.2",
     "bunyan": "^1.8.1",
