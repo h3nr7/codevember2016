@@ -3,7 +3,7 @@ const path                = require('path')
 const ExtractTextPlugin   = require('extract-text-webpack-plugin')
 const nodeModulesPath     = path.resolve(__dirname, 'node_modules')
 
-const serverConfig        = require('server.config.js')
+const serverConfig        = require('./server.config.js')
 
 let extractCSSPath = 'stylesheet.css'
 const config = {
@@ -16,10 +16,13 @@ const config = {
     ],
     extensions: ['', '.js', '.scss']
   },
-  entry: [
-    path.resolve(__dirname, 'client', 'app.js'),
-    path.resolve(__dirname, 'client', 'style', 'main.scss')
-  ],
+  entry: {
+    vendor: ['react', 'react-dom', 'react-router', 'react-redux', 'redux', 'react-router-redux', 'd3'],
+    app: [
+      path.resolve(__dirname, 'client', 'app.js'),
+      path.resolve(__dirname, 'client', 'style', 'main.scss')
+    ]
+  },
   devtool: "source-map",
   output: {
     path: path.resolve(__dirname, 'public'),
@@ -87,9 +90,22 @@ switch(process.env.NODE_ENV) {
     config.devtool = 'eval'
     config.plugins.push(
       new Webpack.optimize.UglifyJsPlugin({
-        compress: { warnings: false }
+        compress: { warnings: false },
+        mangle: {
+            except: ['$super', '$', 'exports', 'require']
+        },
+        comments: false,
+        sourceMap: true
+      }),
+      new Webpack.optimize.CommonsChunkPlugin({
+        name: "vendor",
+        filename: "vendor.js"
       }),
       new Webpack.optimize.DedupePlugin(),
+      new Webpack.optimize.OccurrenceOrderPlugin(),
+      new Webpack.optimize.LimitChunkCountPlugin({
+        maxChunks: 15
+      }),
       new Webpack.DefinePlugin({
         'process.env': {
           'NODE_ENV': JSON.stringify('production')
