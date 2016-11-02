@@ -1,5 +1,6 @@
 import React from 'react'
 import './RootWrapper.scss'
+import Navi from 'container/Navi'
 
 class RootWrapper extends React.Component {
 
@@ -17,6 +18,7 @@ class RootWrapper extends React.Component {
         <div className="rootwrapper__container">
             { this.props.children }
         </div>
+        <Navi {...this.props}/>
       </div>
     )
   }

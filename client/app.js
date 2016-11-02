@@ -1,4 +1,5 @@
 import React                      from 'react'
+import Moment                     from 'moment'
 import ReactDOM                   from 'react-dom'
 import urljoin                    from 'url-join'
 import { Router,
@@ -15,7 +16,10 @@ console.log('kaka', combineRoutes)
 
 const rootRoutes = {
   path: '/',
-  // indexRoute: { onEnter: (nextState, replace) => replace(urljoin(nextState.location.pathname, 'home')) },
+  indexRoute: { onEnter: (nextState, replace) => {
+    const curday = Number(Moment().date())
+    replace(`/day/${curday}`)
+  }},
   component: RootWrapper,
   childRoutes: combineRoutes
 }

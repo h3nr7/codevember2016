@@ -85,8 +85,7 @@ if(serverConf.env.isLocal) {
  * @param  {[type]} express.static(serverConf.paths.js.internal [description]
  * @return {[type]}                                        [description]
  */
-app.use('/public', express.static(__dirname + '/../' + serverConf.paths.js.name))
-console.log('lala', __dirname + '/../' + serverConf.paths.js.name)
+app.use('/public', express.static(__dirname + '/../public'))
 
 /**
  * initialise session and passport

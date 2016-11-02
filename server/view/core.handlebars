@@ -6,7 +6,9 @@
 </head>
 <body>
   <div id="app__container"></div>
-  <script src="/{{JS_FOLDER}}/vendor.js"></script>
+  {{#if notLocal}}
+    <script src="/{{JS_FOLDER}}/vendor.js"></script>
+  {{/if}}
   <script src="/{{JS_FOLDER}}/app.js"></script>
 </body>
 </html>

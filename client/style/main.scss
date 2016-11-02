@@ -1,12 +1,50 @@
 @import 'style/_colors.scss';
 
+// FONT FACE
+@mixin font-face ($fontname, $fontfilename, $fontweight) {
+    font-family: $fontname;
+    src: url('/public/fonts/' + $fontfilename + '.eot');
+    src: url('/public/fonts/' + $fontfilename + '.eot?#iefix') format('embedded-opentype'),
+         url('/public/fonts/' + $fontfilename + '.woff') format('woff'),
+         url('/public/fonts/' + $fontfilename + '.ttf') format('truetype'),
+         url('/public/fonts/' + $fontfilename + '.svg#fontname') format('svg');
+    font-weight: $fontweight;
+    font-style: normal;
+}
+
+@font-face {
+    @include font-face("Inconsolata", inconsolata-webfont, 400);
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+@font-face {
+    @include font-face("DThin", dinthin-webfont, 400);
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+
 
 body {
   display: flex;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  font-size: 15px;
 }
 
 #app {
   &__container {
     display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
   }
 }

@@ -6,7 +6,8 @@ module.exports = (router) => {
 
     var output = {
       title: '',
-      JS_FOLDER: serverConf.paths.js.name
+      JS_FOLDER: serverConf.paths.js.name,
+      notLocal: !serverConf.env.isLocal
     }
 
     res.render('core', output);

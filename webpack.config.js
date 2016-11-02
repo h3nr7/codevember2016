@@ -1,12 +1,15 @@
 const Webpack             = require('webpack')
 const path                = require('path')
 const ExtractTextPlugin   = require('extract-text-webpack-plugin')
-const nodeModulesPath     = path.resolve(__dirname, 'node_modules')
-
+const WriteFilePlugin     = require('write-file-webpack-plugin')
+const CopyWebpackPlugin   = require('copy-webpack-plugin')
 const serverConfig        = require('./server.config.js')
+
+const nodeModulesPath     = path.resolve(__dirname, 'node_modules')
 
 let extractCSSPath = 'stylesheet.css'
 const config = {
+
   resolve: {
     modulesDirectories: [
       'node_modules'
@@ -16,13 +19,7 @@ const config = {
     ],
     extensions: ['', '.js', '.scss']
   },
-  entry: {
-    vendor: ['react', 'react-dom', 'react-router', 'react-redux', 'redux', 'react-router-redux', 'd3'],
-    app: [
-      path.resolve(__dirname, 'client', 'app.js'),
-      path.resolve(__dirname, 'client', 'style', 'main.scss')
-    ]
-  },
+  // entry: {}
   devtool: "source-map",
   output: {
     path: path.resolve(__dirname, 'public'),
@@ -58,7 +55,15 @@ const config = {
   sassLoader: {
     includePaths: [path.resolve(__dirname, 'client')]
   },
-  plugins: [],
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        context: __dirname + '/asset',
+        from: '**/*',
+        to: __dirname + '/public'
+      }
+    ])
+  ],
 }
 
 /**
@@ -67,19 +72,24 @@ const config = {
 switch(process.env.NODE_ENV) {
   default:
   case 'local':
-    config.entry.push(
+    config.devServer = {
+      outputPath: path.join(__dirname, './public')
+    }
+    config.entry = [
+      path.resolve(__dirname, 'client', 'app.js'),
+      path.resolve(__dirname, 'client', 'style', 'main.scss'),
       // For hot style updates
       'webpack/hot/dev-server',
       // The script refreshing the browser on none hot updates
       'webpack-dev-server/client?http://localhost:' + serverConfig.wpPort
-    )
+    ]
     config.output = {
-      path: path.resolve(__dirname, 'build'),
-      filename: "build/app.js",
-      publicPath: '/build/'
+      path: path.resolve(__dirname),
+      filename: "build/app.js"
     }
     config.plugins.push(
-      new Webpack.HotModuleReplacementPlugin()
+      new Webpack.HotModuleReplacementPlugin(),
+      new WriteFilePlugin()
     )
     extractCSSPath = 'build/stylesheet.css'
     break
@@ -88,6 +98,13 @@ switch(process.env.NODE_ENV) {
   case 'staging':
   case 'production':
     config.devtool = 'eval'
+    config.entry = {
+      vendor: ['react', 'react-dom', 'react-router', 'react-redux', 'redux', 'react-router-redux', 'd3'],
+      app: [
+        path.resolve(__dirname, 'client', 'app.js'),
+        path.resolve(__dirname, 'client', 'style', 'main.scss')
+      ]
+    }
     config.plugins.push(
       new Webpack.optimize.UglifyJsPlugin({
         compress: { warnings: false },
