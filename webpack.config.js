@@ -89,6 +89,7 @@ switch(process.env.NODE_ENV) {
       new Webpack.optimize.UglifyJsPlugin({
         compress: { warnings: false }
       }),
+      new Webpack.optimize.DedupePlugin(),
       new Webpack.DefinePlugin({
         'process.env': {
           'NODE_ENV': JSON.stringify('production')

@@ -9,6 +9,7 @@
     "start": "node server/app.js"
   },
   "devDependencies": {
+    "babel-eslint": "^7.1.0",
     "chai": "^3.5.0",
     "dotenv": "^2.0.0",
     "enzyme": "^2.4.1",
@@ -42,6 +43,7 @@
     "contentful": "^3.6.4",
     "cookie-parser": "^1.4.3",
     "css-loader": "^0.25.0",
+    "d3": "^4.3.0",
     "ejs": "2.3.3",
     "express": "^4.13.3",
     "express-handlebars": "^3.0.0",
