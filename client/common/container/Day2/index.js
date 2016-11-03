@@ -2,6 +2,12 @@ import React, { Component } from 'react'
 import * as THREE from 'three'
 import AbstractThreeIndex from 'container/Day0/AbstractThreeIndex'
 
+import basicFrag from './shader/basic.frag'
+import basicVert from './shader/basic.vert'
+import niceFrag from './shader/nice.frag'
+import niceVert from './shader/nice.vert'
+
+
 export default class Day extends AbstractThreeIndex {
 
   constructor() {
@@ -10,6 +16,7 @@ export default class Day extends AbstractThreeIndex {
 
   componentWillMount() {
     super.componentWillMount()
+    this.positionScaling = 1
   }
 
   componentDidMount() {
@@ -20,53 +27,75 @@ export default class Day extends AbstractThreeIndex {
     super.componentWillUnmount()
   }
 
+  reset() {
+    super.reset()
+
+  }
+
   init() {
     super.init()
 
-    this.group = new THREE.Group()
-    this.scene.add( this.group )
+    // set background colour
+    this.renderer.setClearColor (0x000000, 1)
+
+    // create group
+    this.group1 = new THREE.Group()
+    this.scene.add( this.group1 )
+
+    this.group2 = new THREE.Group()
+    this.scene.add (this.group2 )
+
+    let material = new THREE.MeshLambertMaterial({ color: 0xCC0000 })
+
+    let material2 = new THREE.SpriteMaterial( { color: 0xffffff })
+
+    let material4 = new THREE.MeshPhongMaterial({
+      color: 0xFF5644,
+      shading: THREE.FlatShading,
+      specular: 0x55D5FF,
+      shininess: 1
+    })
+
+    let material5 = new THREE.MeshNormalMaterial({
+      morphTargets: true
+    })
+
+    let material6 = new THREE.ShaderMaterial( {
+      fragmentShader: basicFrag,
+      vertexShader: basicVert
+    })
+
+    let material7 = new THREE.ShaderMaterial({
+      fragmentShader: niceFrag,
+      vertexShader: niceVert
+    })
+
+    let radius = 1, segments = 16, rings = 16
 
 
     for ( let i = 0; i < 1000; i++ ) {
+      let sphere = new THREE.Mesh (new THREE.SphereGeometry (radius, segments, rings), material6)
+      sphere.position.x = Math.random() * 2000 - 1000
+  		sphere.position.y = Math.random() * 2000 - 1000
+  		sphere.position.z = Math.random() * 2000 - 1000
+  		sphere.scale.x = sphere.scale.y = sphere.scale.z = Math.random() * 10
+  		this.group1.add( sphere )
+    }
 
-      let material = new THREE.MeshLambertMaterial({ color: 0xCC0000 })
-
-      let material2 = new THREE.SpriteMaterial( { color: 0x808008 })
-
-      let material3 = new THREE.SpriteCanvasMaterial( {
-				color: Math.random() * 0x808008 + 0x808080,
-				program: context => {
-          context.beginPath()
-          context.arc( 0, 0, 0.5, 0, Math.PI * 2, true )
-          context.fill()
-        }
-			})
-
-
-      // let radius = 50, segments = 16, rings = 16
-      //
-      // let sphere = new THREE.Mesh (new THREE.SphereGeometry (radius, segments, rings), material)
-      // sphere.position.x = Math.random() * 2000 - 1000
-  		// sphere.position.y = Math.random() * 2000 - 1000
-  		// sphere.position.z = Math.random() * 10
-  		// sphere.scale.x = sphere.scale.y = Math.random()
-  		// this.group.add( sphere )
-
-
-  		let particle = new THREE.Sprite( material2 )
-  		particle.position.x = Math.random() * 2000 - 1000
-  		particle.position.y = Math.random() * 2000 - 1000
-  		particle.position.z = Math.random() * 10
-  		particle.scale.x = particle.scale.y = Math.random() * 100
-  		this.scene.add( particle )
-
+    for( let i = 0; i < 5000; i++) {
+      let particle = new THREE.Sprite( material2 )
+      particle.position.x = Math.random() * 2000 - 1000
+      particle.position.y = Math.random() * 2000 - 1000
+      particle.position.z = Math.random() * 2000 - 1000
+      particle.scale.x = particle.scale.y = 1
+      this.group2.add( particle )
     }
 
     let pointLight = new THREE.PointLight(0xFFFFFF)
     // set its position
-    pointLight.position.x = 10
-    pointLight.position.y = 50
-    pointLight.position.z = 130
+    pointLight.position.x = 0
+    pointLight.position.y = 0
+    pointLight.position.z = 0
     this.scene.add( pointLight )
 
   }
@@ -74,6 +103,11 @@ export default class Day extends AbstractThreeIndex {
   tick() {
     super.tick()
     // TODO: tick function
+    this.camera.position.x += ( this.mouse.normX - this.camera.position.x ) * 0.05;
+    this.camera.position.y += ( - this.mouse.normY - this.camera.position.y ) * 0.05;
+    this.camera.lookAt( this.scene.position );
+    this.group1.rotation.x += 0.005;
+    this.group1.rotation.y += 0.01;
   }
 
 
@@ -81,7 +115,10 @@ export default class Day extends AbstractThreeIndex {
     return(
       <div
         ref = { c => { this.container = c }}
-        className="day__container">
+        className="day__container"
+        onMouseMove={this.mouseMove}
+        onTouchStart={this.touchStart}
+        onTouchMove={this.touchMove}>
       </div>
     )
   }

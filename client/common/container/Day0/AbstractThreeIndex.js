@@ -16,6 +16,13 @@ export default class AbstractThreeDay extends Component {
       height: window.innerHeight
     })
 
+    this.mouse = {
+      normX: 0,
+      normY: 0,
+      x: 0,
+      y: 0
+    }
+
   }
 
   componentDidMount() {
@@ -38,6 +45,10 @@ export default class AbstractThreeDay extends Component {
     this.camera = null
     this.renderer = null
     this.isAnimating = false
+
+    this.mouseMove = this.mouseMove.bind(this)
+    this.touchStart = this.touchStart.bind(this)
+    this.touchMove = this.touchMove.bind(this)
   }
 
   init() {
@@ -88,6 +99,39 @@ export default class AbstractThreeDay extends Component {
     // TODO: tick function
   }
 
+  mouseMove(event) {
+    this.mouse = {
+      normX: event.clientX - this.state.width / 2,
+      normY: event.clientY - this.state.height / 2,
+      x: event.clientX,
+      y: event.clientY
+    }
+  }
+
+  touchStart(event) {
+    if ( event.touches.length === 1 ) {
+			event.preventDefault()
+      this.mouse = {
+        normX: event.touches[ 0 ].pageX - this.state.width / 2,
+        normY: event.touches[ 0 ].pageY - this.state.height / 2,
+        x: event.touches[ 0 ].pageX,
+        y: event.touches[ 0 ].pageY
+      }
+		}
+  }
+
+  touchMove(event) {
+    if ( event.touches.length === 1 ) {
+			event.preventDefault()
+      this.mouse = {
+        normX: event.touches[ 0 ].pageX - this.state.width / 2,
+        normY: event.touches[ 0 ].pageY - this.state.height / 2,
+        x: event.touches[ 0 ].pageX,
+        y: event.touches[ 0 ].pageY
+      }
+		}
+  }
+
   animate() {
     if(!this.isAnimating) return
     window.requestAnimationFrame( this.animate )
@@ -111,7 +155,10 @@ export default class AbstractThreeDay extends Component {
     return(
       <div
         ref = { c => { this.container = c }}
-        className="day__container">
+        className="day__container"
+        onMouseMove={this.mouseMove}
+        onTouchStart={this.touchStart}
+        onTouchMove={this.touchMove}>
       </div>
     )
   }

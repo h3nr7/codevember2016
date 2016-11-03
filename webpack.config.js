@@ -45,11 +45,13 @@ const config = {
           cacheDirectory: true,
           presets: ['react', 'es2015']
        }
-     },
+      },
       {
         test: /\.json$/,
         loader: "json-loader"
-      }
+      },
+      { test: /\.(glsl|frag|vert)$/, loader: 'raw', exclude: /node_modules/ },
+      { test: /\.(glsl|frag|vert)$/, loader: 'glslify', exclude: /node_modules/ }
     ],
   },
   sassLoader: {
