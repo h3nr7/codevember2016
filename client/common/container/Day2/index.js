@@ -17,6 +17,7 @@ export default class Day extends AbstractThreeIndex {
   componentWillMount() {
     super.componentWillMount()
     this.positionScaling = 1
+    this.start = Date.now()
   }
 
   componentDidMount() {
@@ -65,20 +66,27 @@ export default class Day extends AbstractThreeIndex {
       vertexShader: basicVert
     })
 
-    let material7 = new THREE.ShaderMaterial({
+    this.material7 = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { // float initialized to 0
+            type: "f",
+            value: 0.0
+        }
+      },
       fragmentShader: niceFrag,
       vertexShader: niceVert
+
     })
 
     let radius = 1, segments = 16, rings = 16
 
 
     for ( let i = 0; i < 1000; i++ ) {
-      let sphere = new THREE.Mesh (new THREE.SphereGeometry (radius, segments, rings), material6)
+      let sphere = new THREE.Mesh (new THREE.SphereGeometry (radius, segments, rings), this.material7)
       sphere.position.x = Math.random() * 2000 - 1000
   		sphere.position.y = Math.random() * 2000 - 1000
   		sphere.position.z = Math.random() * 2000 - 1000
-  		sphere.scale.x = sphere.scale.y = sphere.scale.z = Math.random() * 10
+  		sphere.scale.x = sphere.scale.y = sphere.scale.z = 8 + Math.random() * 2
   		this.group1.add( sphere )
     }
 
@@ -103,11 +111,17 @@ export default class Day extends AbstractThreeIndex {
   tick() {
     super.tick()
     // TODO: tick function
-    this.camera.position.x += ( this.mouse.normX - this.camera.position.x ) * 0.05;
-    this.camera.position.y += ( - this.mouse.normY - this.camera.position.y ) * 0.05;
-    this.camera.lookAt( this.scene.position );
-    this.group1.rotation.x += 0.005;
-    this.group1.rotation.y += 0.01;
+    this.material7.uniforms[ 'time' ].value = .00025 * ( Date.now() - this.start )
+
+    this.camera.position.x += ( this.mouse.normX - this.camera.position.x ) * 0.05
+    this.camera.position.y += ( - this.mouse.normY - this.camera.position.y ) * 0.05
+    this.camera.lookAt( this.scene.position )
+    this.group1.rotation.x += 0.0005
+    this.group1.rotation.y += 0.001
+
+    this.group2.rotation.x -= 0.005
+    this.group2.rotation.y -= 0.01
+
   }
 
 
