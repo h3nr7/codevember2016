@@ -9,6 +9,9 @@ export default class Day1 extends Component {
     this.settings = {
       n: 20
     }
+  }
+
+  componentWillMount() {
 
     this.onResize = this.onResize.bind(this)
     this.ticked = this.ticked.bind(this)
@@ -18,13 +21,31 @@ export default class Day1 extends Component {
     this.dragEnd = this.dragEnd.bind(this)
     this.drawLink = this.drawLink.bind(this)
     this.drawNode = this.drawNode.bind(this)
-  }
 
-  componentWillMount() {
     this.setState({
       width: window.innerWidth,
       height: window.innerHeight
     })
+  }
+
+  componentWillUnmount() {
+
+    window.removeEventListener('resize', this.onResize)
+
+    d3.select(this.canvas)
+      .call(d3.drag()
+        .container(this.canvas)
+        .on('start', null)
+        .on('drag', null)
+        .on('end', null))
+
+    this.simulation.on("tick", null)
+    this.simulation = null
+    this.links = null
+    this.nodes = null
+    this.context = null
+    this.canvas = null
+
   }
 
   componentDidMount() {
@@ -59,10 +80,6 @@ export default class Day1 extends Component {
         .on('end', this.dragEnd))
 
     window.addEventListener('resize', this.onResize)
-  }
-
-  compoenntWillUnmount() {
-
   }
 
   onResize(evt) {

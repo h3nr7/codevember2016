@@ -5,22 +5,44 @@ export default class Day extends Component {
 
   constructor() {
     super()
-      this.camera = null
-      this.scene = null
-      this.renderer = null
-      this.material = null
-      this.group = null
-      this.particle = null
-      this.windowHalfX = 0
-      this.windowHalfY = 0
+    this.camera = null
+    this.scene = null
+    this.renderer = null
+    this.material = null
+    this.group = null
+    this.particle = null
+    this.windowHalfX = 0
+    this.windowHalfY = 0
+    this.isAnimating = false
+  }
+
+  componentWillMount() {
+    this.animate = this.animate.bind(this)
   }
 
   componentDidMount() {
+    this.isAnimating = true
     this.windowHalfX = window.innerWidth / 2
     this.windowHalfY = window.innerHeight / 2
 
     this.init()
     this.animate()
+  }
+
+  componentWillUnmount() {
+
+    this.isAnimating = false
+
+    this.camera = null
+    this.scene = null
+    this.material = null
+    this.group = null
+    this.particle = null
+    this.windowHalfX = 0
+    this.windowHalfY = 0
+
+    this.container.removeChild( this.renderer.domElement )
+    this.renderer = null
   }
 
   init() {
@@ -81,9 +103,9 @@ export default class Day extends Component {
   }
 
   animate() {
-
-			window.requestAnimationFrame( this.animate.bind(this) )
-			this.renderCanvas( )
+		if(!this.isAnimating) return
+    window.requestAnimationFrame( this.animate )
+		this.renderCanvas()
 	}
 
   renderCanvas() {
