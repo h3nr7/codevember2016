@@ -21,7 +21,7 @@ import CanvasRenderer             from 'lib/CanvasRenderer'
 const rootRoutes = {
   path: '/',
   indexRoute: { onEnter: (nextState, replace) => {
-    const curday = Number(Moment().date())
+    const curday = Number(Moment().date()) - 1
     replace(`/day/${curday}`)
   }},
   component: RootWrapper,
