@@ -1,6 +1,5 @@
 // Include the Ashima code here!
 
-varying vec2 vUv;
 varying float noise;
 uniform float time;
 
@@ -17,8 +16,6 @@ float turbulence( vec3 p ) {
 }
 
 void main() {
-
-    vUv = uv;
 
     // add time to the noise parameters so it's animated
     noise = 10.0 *  -.10 * turbulence( .5 * normal + time );
