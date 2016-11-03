@@ -12,7 +12,11 @@ import combineRoutes              from 'routes'
 import RootWrapper                from 'wrapper/RootWrapper'
 
 
-console.log('kaka', combineRoutes)
+/**
+ * Initialise addon for THREE.JS
+ */
+import Projector                  from 'lib/Projector'
+import CanvasRenderer             from 'lib/CanvasRenderer'
 
 const rootRoutes = {
   path: '/',

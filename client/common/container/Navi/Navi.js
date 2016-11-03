@@ -12,7 +12,7 @@ export default class Navi extends Component {
 
   renderDays() {
     let output = []
-    let range = Number(Moment().date())
+    let range = Number(Moment().date()) - 1
     let { pathname } = this.props.location
 
     for(let i = 0; i < range; i++) {
