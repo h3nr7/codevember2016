@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import './Day1.scss'
 import * as d3 from 'd3'
 
 export default class Day1 extends Component {
@@ -144,7 +145,7 @@ export default class Day1 extends Component {
 
   render() {
     return(
-      <div className="day1__container">
+      <div className="day__container day1__container">
         <canvas ref = {(c) => { this.canvas = c }} ></canvas>
       </div>
     )
