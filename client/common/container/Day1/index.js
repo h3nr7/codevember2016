@@ -10,6 +10,7 @@ export default class Day1 extends Component {
       n: 20
     }
 
+    this.onResize = this.onResize.bind(this)
     this.ticked = this.ticked.bind(this)
     this.dragSubject = this.dragSubject.bind(this)
     this.dragStart = this.dragStart.bind(this)
@@ -19,12 +20,19 @@ export default class Day1 extends Component {
     this.drawNode = this.drawNode.bind(this)
   }
 
+  componentWillMount() {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight
+    })
+  }
+
   componentDidMount() {
     let { n } = this.settings
-
+    let { width, height } = this.state
     this.context = this.canvas.getContext('2d')
-    this.width = this.canvas.width
-    this.height = this.canvas.height
+    this.canvas.width = width
+    this.canvas.height = height
 
     this.nodes = d3.range(n * n).map((i) => {
       return { index: i }
@@ -50,17 +58,26 @@ export default class Day1 extends Component {
         .on('drag', this.dragged)
         .on('end', this.dragEnd))
 
+    window.addEventListener('resize', this.onResize)
   }
 
   compoenntWillUnmount() {
 
   }
 
+  onResize(evt) {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight
+    })
+  }
+
   ticked() {
     let { context } = this
-    context.clearRect(0, 0, this.width, this.height)
+    let { width, height } = this.state
+    context.clearRect(0, 0, width, height)
     context.save()
-    context.translate(this.width / 2, this.height / 2)
+    context.translate(width / 2, height / 2)
 
     context.beginPath()
     this.links.forEach(this.drawLink)
@@ -77,7 +94,8 @@ export default class Day1 extends Component {
   }
 
   dragSubject(evt) {
-    return this.simulation.find(d3.event.x - this.width / 2, d3.event.y - this.height / 2)
+    let { width, height } = this.state
+    return this.simulation.find(d3.event.x - width / 2, d3.event.y - height / 2)
   }
 
   dragStart(evt) {
@@ -110,7 +128,7 @@ export default class Day1 extends Component {
   render() {
     return(
       <div className="day1__container">
-        <canvas ref = {(c) => { this.canvas = c }} width="960" height="960"></canvas>
+        <canvas ref = {(c) => { this.canvas = c }} ></canvas>
       </div>
     )
   }
