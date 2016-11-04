@@ -114,15 +114,16 @@ switch(process.env.NODE_ENV) {
           warnings: false
         },
         mangle: {
-            except: ['exports', 'require'],
-            toplevel: true,
-            sort: true,
-            eval: true,
-            properties: true,
-            // Don't care about IE8
-            screw_ie8 : true,
-            // Don't mangle function names
-            keep_fnames: true
+          except: ['$super', '$', 'exports', 'require']
+
+            // toplevel: true,
+            // sort: true,
+            // eval: true,
+            // properties: true,
+            // // Don't care about IE8
+            // screw_ie8 : true,
+            // // Don't mangle function names
+            // keep_fnames: true
         },
         space_colon: true,
         comments: false,
