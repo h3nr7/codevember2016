@@ -109,7 +109,6 @@ switch(process.env.NODE_ENV) {
     }
     config.plugins.push(
       new Webpack.optimize.UglifyJsPlugin({
-        minimize: true,
         compress: {
           warnings: false
         },
@@ -125,9 +124,7 @@ switch(process.env.NODE_ENV) {
             // // Don't mangle function names
             // keep_fnames: true
         },
-        space_colon: true,
-        comments: false,
-        sourceMap: false
+        sourceMap: true
       }),
       new Webpack.optimize.CommonsChunkPlugin({
         name: "vendor",

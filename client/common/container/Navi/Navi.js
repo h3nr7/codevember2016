@@ -25,10 +25,10 @@ export default class Navi extends Component {
         to={'/day/' + d}
         className={"navi__day"}>{d}</Link>
 
-      let divOutput = <div
+      let divOutput = <a
         ref = { c => this.dayButton.push(c) }
         key={'day' + i}
-        className={"navi__day current"}>{d}</div>
+        className={"navi__day current"}>{d}</a>
 
       output.push((pathname === toPath) ? divOutput : linkOutput)
     }
