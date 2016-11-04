@@ -33,7 +33,7 @@ export default class Navi extends Component {
       output.push((pathname === toPath) ? divOutput : linkOutput)
     }
 
-    return <div className="navi__daycontainer"><span className="navi__title">CODEVEMBER 2016</span> {output}</div>
+    return <div className="navi__daycontainer"><span className="navi__title">CODEVEMBER_2016</span> {output}</div>
 
   }
 
