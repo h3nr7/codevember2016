@@ -12,11 +12,6 @@ import combineRoutes              from 'routes'
 import RootWrapper                from 'wrapper/RootWrapper'
 
 
-/**
- * Initialise addon for THREE.JS
- */
-import Projector                  from 'lib/Projector'
-
 const rootRoutes = {
   path: '/',
   indexRoute: { onEnter: (nextState, replace) => {

@@ -111,25 +111,7 @@ switch(process.env.NODE_ENV) {
       new Webpack.optimize.UglifyJsPlugin({
         minimize: true,
         compress: {
-          warnings: false,
-          properties: true,
-          sequences: true,
-          dead_code: true,
-          conditionals: true,
-          comparisons: true,
-          evaluate: true,
-          booleans: true,
-          unused: true,
-          loops: true,
-          hoist_funs: true,
-          cascade: true,
-          if_return: true,
-          join_vars: true,
-          //drop_console: true,
-          drop_debugger: true,
-          unsafe: true,
-          hoist_vars: true,
-          negate_iife: true,
+          warnings: false
         },
         mangle: {
             except: ['exports', 'require'],
