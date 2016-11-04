@@ -51,6 +51,10 @@ export default class AbstractThreeDay extends Component {
     this.touchMove = this.touchMove.bind(this)
   }
 
+  /**
+   * INIT
+   * @return {[type]} [description]
+   */
   init() {
     let { width, height } = this.state
 
@@ -95,10 +99,19 @@ export default class AbstractThreeDay extends Component {
     this.camera.position.z = z
   }
 
+  /**
+   * ticker
+   * @return {[type]} [description]
+   */
   tick() {
     // TODO: tick function
   }
 
+  /**
+   * mouse move handler
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
   mouseMove(event) {
     this.mouse = {
       normX: event.clientX - this.state.width / 2,
@@ -108,6 +121,11 @@ export default class AbstractThreeDay extends Component {
     }
   }
 
+  /**
+   * touch start handler
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
   touchStart(event) {
     if ( event.touches.length === 1 ) {
 			event.preventDefault()
@@ -120,6 +138,11 @@ export default class AbstractThreeDay extends Component {
 		}
   }
 
+  /**
+   * touch move handler
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
   touchMove(event) {
     if ( event.touches.length === 1 ) {
 			event.preventDefault()
@@ -132,6 +155,10 @@ export default class AbstractThreeDay extends Component {
 		}
   }
 
+  /**
+   * animate
+   * @return {[type]} [description]
+   */
   animate() {
     if(!this.isAnimating) return
     window.requestAnimationFrame( this.animate )
@@ -139,6 +166,11 @@ export default class AbstractThreeDay extends Component {
     this.renderer.render(this.scene, this.camera)
   }
 
+
+  /**
+   * on resize handler
+   * @return {[type]} [description]
+   */
   onResize() {
 
     this.setState({

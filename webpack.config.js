@@ -20,7 +20,7 @@ const config = {
     extensions: ['', '.js', '.scss']
   },
   // entry: {}
-  devtool: "source-map",
+  devtool: "eval-source-map",
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: "app.js",
@@ -101,7 +101,7 @@ switch(process.env.NODE_ENV) {
   case 'production':
     config.devtool = 'eval'
     config.entry = {
-      vendor: ['react', 'react-dom', 'react-router', 'react-redux', 'redux', 'react-router-redux', 'd3'],
+      vendor: ['react', 'react-dom', 'react-router', 'react-redux', 'redux', 'react-router-redux', 'd3', 'three'],
       app: [
         path.resolve(__dirname, 'client', 'app.js'),
         path.resolve(__dirname, 'client', 'style', 'main.scss')
@@ -109,12 +109,42 @@ switch(process.env.NODE_ENV) {
     }
     config.plugins.push(
       new Webpack.optimize.UglifyJsPlugin({
-        compress: { warnings: false },
-        mangle: {
-            except: ['$super', '$', 'exports', 'require']
+        minimize: true,
+        compress: {
+          warnings: false,
+          properties: true,
+          sequences: true,
+          dead_code: true,
+          conditionals: true,
+          comparisons: true,
+          evaluate: true,
+          booleans: true,
+          unused: true,
+          loops: true,
+          hoist_funs: true,
+          cascade: true,
+          if_return: true,
+          join_vars: true,
+          //drop_console: true,
+          drop_debugger: true,
+          unsafe: true,
+          hoist_vars: true,
+          negate_iife: true,
         },
+        mangle: {
+            except: ['exports', 'require'],
+            toplevel: true,
+            sort: true,
+            eval: true,
+            properties: true,
+            // Don't care about IE8
+            screw_ie8 : true,
+            // Don't mangle function names
+            keep_fnames: true
+        },
+        space_colon: true,
         comments: false,
-        sourceMap: true
+        sourceMap: false
       }),
       new Webpack.optimize.CommonsChunkPlugin({
         name: "vendor",
@@ -127,7 +157,7 @@ switch(process.env.NODE_ENV) {
       }),
       new Webpack.DefinePlugin({
         'process.env': {
-          'NODE_ENV': JSON.stringify('production')
+          'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
         }
       })
     )

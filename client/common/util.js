@@ -1,6 +1,6 @@
 import React          from 'react'
-import HtmlToReact    from 'html-to-react'
-import _              from 'underscore'
+// import HtmlToReact    from 'html-to-react'
+// import _              from 'underscore'
 
 /**
  * create reducer

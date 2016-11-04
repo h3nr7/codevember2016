@@ -16,7 +16,6 @@ import RootWrapper                from 'wrapper/RootWrapper'
  * Initialise addon for THREE.JS
  */
 import Projector                  from 'lib/Projector'
-import CanvasRenderer             from 'lib/CanvasRenderer'
 
 const rootRoutes = {
   path: '/',

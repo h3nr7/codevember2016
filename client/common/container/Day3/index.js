@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import * as d3 from 'd3'
+import * as THREE from 'three'
+import AbstractThreeIndex from 'container/Day0/AbstractThreeIndex'
 
-export default class Day extends Component {
+export default class Day extends AbstractThreeIndex {
 
   constructor() {
     super()
