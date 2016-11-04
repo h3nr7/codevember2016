@@ -14,6 +14,7 @@ export default class Day extends AbstractThreeIndex {
   render() {
     return(
       <div className="day__container">
+        <h2 className="inprogress">working on it...</h2>
       </div>
     )
   }
