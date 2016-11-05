@@ -55,7 +55,7 @@ export default class Day extends AbstractThreeIndex {
 
     // Load and render Earth
     this.textureLoader.load('/public/texture/world2.jpg', this.worldTexLoaded.bind(this))
-    this.textureLoader.load('/public/texture/atmosphere.jpg', this.cloudLoaded.bind(this))
+    this.textureLoader.load('/public/texture/cloud.jpg', this.cloudLoaded.bind(this))
 
     this.scene.fog = new THREE.Fog(0xfffff, 0, 1000);
   }
