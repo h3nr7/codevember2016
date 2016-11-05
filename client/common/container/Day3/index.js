@@ -30,7 +30,10 @@ export default class Day extends AbstractThreeIndex {
     this.distanceTarget = 1000
     this.padding = 40
 
-    this.textureLoader = new THREE.TextureLoader()
+    this.loaderManager = new THREE.LoadingManager()
+    this.textureLoader = new THREE.TextureLoader(this.loaderManager)
+
+    this.loaderManager.onLoad = this.onLoadComplete.bind(this)
 
   }
 
@@ -108,8 +111,7 @@ export default class Day extends AbstractThreeIndex {
 
   mouseWheel(event) {
     event.preventDefault()
-      this.zoom(event.deltaY * 0.3)
-      console.log(event.deltaY, this.distance, this.distanceTarget)
+    this.zoom(event.deltaY * 0.3)
   }
 
   mouseMove(event) {
@@ -146,8 +148,7 @@ export default class Day extends AbstractThreeIndex {
 
     let earthGeo = new THREE.SphereGeometry(200, 40, 30)
 
-    let mesh = new THREE.Mesh(earthGeo, earthMaterial)
-    this.scene.add(mesh)
+    this.earthMesh = new THREE.Mesh(earthGeo, earthMaterial)
 
   }
 
@@ -166,7 +167,6 @@ export default class Day extends AbstractThreeIndex {
 
     this.atmosMesh = new THREE.Mesh(geo, material)
     this.atmosMesh.scale.set(1.04, 1.04, 1.04)
-    this.scene.add(this.atmosMesh)
 
     material = new THREE.ShaderMaterial({
       uniforms: {
@@ -181,9 +181,14 @@ export default class Day extends AbstractThreeIndex {
       depthWrite: false
     })
 
-    this.atmosMesh = new THREE.Mesh(geo, material)
-    this.atmosMesh.scale.set(1.04, 1.04, 1.04)
+    this.atmosCloudMesh = new THREE.Mesh(geo, material)
+    this.atmosCloudMesh.scale.set(1.04, 1.04, 1.04)
+  }
+
+  onLoadComplete() {
+    this.scene.add(this.earthMesh)
     this.scene.add(this.atmosMesh)
+    this.scene.add(this.atmosCloudMesh)
   }
 
 
