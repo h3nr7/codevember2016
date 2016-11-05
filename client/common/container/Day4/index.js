@@ -12,7 +12,12 @@ export default class Day extends Component {
 
   render() {
     return(
-      <div className="day__container">
+      <div ref = { c => { this.container = c }}
+        className="day__container"
+        onMouseMove={this.mouseMove}
+        onTouchStart={this.touchStart}
+        onTouchMove={this.touchMove}>
+        <h2 className="inprogress">working on it...</h2>
       </div>
     )
   }

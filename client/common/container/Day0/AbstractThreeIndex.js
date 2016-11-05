@@ -20,7 +20,8 @@ export default class AbstractThreeDay extends Component {
       normX: 0,
       normY: 0,
       x: 0,
-      y: 0
+      y: 0,
+      isDown: false
     }
 
   }
@@ -46,9 +47,14 @@ export default class AbstractThreeDay extends Component {
     this.renderer = null
     this.isAnimating = false
 
+    this.mouseUp = this.mouseUp.bind(this)
+    this.mouseOut = this.mouseOut.bind(this)
+    this.mouseDown = this.mouseDown.bind(this)
     this.mouseMove = this.mouseMove.bind(this)
+    this.mouseWheel = this.mouseWheel.bind(this)
     this.touchStart = this.touchStart.bind(this)
     this.touchMove = this.touchMove.bind(this)
+    this.touchEnd = this.touchEnd.bind(this)
   }
 
   /**
@@ -108,17 +114,50 @@ export default class AbstractThreeDay extends Component {
   }
 
   /**
+   * mouse down handler
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
+  mouseDown(event) {
+    Object.assign(this.mouse, {
+      isDown: true
+    })
+  }
+
+  /**
+   * mouse up handler
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
+  mouseUp(event) {
+    Object.assign(this.mouse, {
+      isDown: false
+    })
+  }
+
+  /**
+   * mouse out handler
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
+  mouseOut(event) {
+    Object.assign(this.mouse, {
+      isDown: false
+    })
+  }
+
+  /**
    * mouse move handler
    * @param  {[type]} event [description]
    * @return {[type]}       [description]
    */
   mouseMove(event) {
-    this.mouse = {
+    Object.assign(this.mouse, {
       normX: event.clientX - this.state.width / 2,
       normY: event.clientY - this.state.height / 2,
       x: event.clientX,
       y: event.clientY
-    }
+    })
   }
 
   /**
@@ -129,12 +168,13 @@ export default class AbstractThreeDay extends Component {
   touchStart(event) {
     if ( event.touches.length === 1 ) {
 			event.preventDefault()
-      this.mouse = {
+      Object.assign(this.mouse, {
         normX: event.touches[ 0 ].pageX - this.state.width / 2,
         normY: event.touches[ 0 ].pageY - this.state.height / 2,
         x: event.touches[ 0 ].pageX,
-        y: event.touches[ 0 ].pageY
-      }
+        y: event.touches[ 0 ].pageY,
+        isDown: true
+      })
 		}
   }
 
@@ -146,13 +186,31 @@ export default class AbstractThreeDay extends Component {
   touchMove(event) {
     if ( event.touches.length === 1 ) {
 			event.preventDefault()
-      this.mouse = {
+      Object.assign(this.mouse, {
         normX: event.touches[ 0 ].pageX - this.state.width / 2,
         normY: event.touches[ 0 ].pageY - this.state.height / 2,
         x: event.touches[ 0 ].pageX,
         y: event.touches[ 0 ].pageY
-      }
+      })
 		}
+  }
+
+  /**
+   * touch end
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
+  touchEnd(event) {
+    if ( event.touches.length === 1 ) {
+      event.preventDefault()
+      Object.assign(this.mouse, {
+        normX: event.touches[ 0 ].pageX - this.state.width / 2,
+        normY: event.touches[ 0 ].pageY - this.state.height / 2,
+        x: event.touches[ 0 ].pageX,
+        y: event.touches[ 0 ].pageY,
+        isDown: false
+      })
+    }
   }
 
   /**
@@ -188,9 +246,13 @@ export default class AbstractThreeDay extends Component {
       <div
         ref = { c => { this.container = c }}
         className="day__container"
+        onMouseUp={this.mouseUp}
+        onMouseDown={this.mouseDown}
         onMouseMove={this.mouseMove}
+        onMouseWheel={this.mouseWheel}
         onTouchStart={this.touchStart}
-        onTouchMove={this.touchMove}>
+        onTouchMove={this.touchMove}
+        onTOuchEnd={this.touchEnd}>
       </div>
     )
   }
