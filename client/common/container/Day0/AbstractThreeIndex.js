@@ -161,6 +161,15 @@ export default class AbstractThreeDay extends Component {
   }
 
   /**
+   * mouse wheel handler
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
+  mouseWheel(event) {
+
+  }
+
+  /**
    * touch start handler
    * @param  {[type]} event [description]
    * @return {[type]}       [description]
