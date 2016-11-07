@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import {
   MeshBasicMaterial, TextureLoader,
   CylinderGeometry, Mesh, CatmullRomCurve3,
-  Geometry, LineBasicMaterial, Line
+  Geometry, LineBasicMaterial, Line,
+  PointsMaterial, Points
 } from 'three'
 
 import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
@@ -25,7 +26,8 @@ export default class Day extends BasicThreeWithCam {
     super.init()
 
     let cylinderGeo = this.initCylinder()
-    this.initSpline({pointArr: cylinderGeo.vertices})
+    this.initSpline({ pointArr: cylinderGeo.vertices })
+    this.initPoint({ pointArr: cylinderGeo.vertices })
 
   }
 
@@ -82,6 +84,24 @@ export default class Day extends BasicThreeWithCam {
     let splineObject = new Line( geo, material )
 
     this.scene.add(splineObject)
+  }
+
+  initPoint({ pointArr = [] } = {}) {
+    let geo = new Geometry()
+    geo.vertices = pointArr
+    console.log(geo)
+    this.dotMaterial = new PointsMaterial({
+      color: 0xff00ff,
+      size: 5,
+      sizeAttenuation: false
+    })
+    let dot = new Points( geo, this.dotMaterial )
+
+    // Add GUI
+    this.guiDotMaterial = this.guiAddFolder('Dot Material')
+    this.guiAdd(this.guiDotMaterial, this.dotMaterial, 'visible')
+
+    this.scene.add(dot)
   }
 
 

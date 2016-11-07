@@ -96,7 +96,7 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
 
   guiAddFolder(name, isOpen = false) {
     let folder = this.gui.addFolder(name)
-    folder.open()
+    if(isOpen) folder.open()
     return folder
   }
 
@@ -108,7 +108,7 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
    */
   guiAdd(folder, obj, name) {
     folder = !!folder ? folder : this.gui
-    folder.add(this.cylinderMaterial, name)
+    folder.add(obj, name)
   }
 
   render() {

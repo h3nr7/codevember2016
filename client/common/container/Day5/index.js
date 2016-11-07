@@ -67,7 +67,7 @@ export default class Day extends BasicThreeWithCam {
     this.guiAdd(this.guiCyMaterial, this.cylinderMaterial, 'wireframe')
     this.guiAdd(this.guiCyMaterial, this.cylinderMaterial, 'visible')
 
-    this.scene.add(this.cylinderMesh.clone())
+    this.scene.add(this.cylinderMesh)
 
     return geo
   }
@@ -76,7 +76,7 @@ export default class Day extends BasicThreeWithCam {
 
     pointArr.pop()
     pointArr.pop()
-    
+
     let curve = new CatmullRomCurve3(pointArr)
     curve.type =  'catmullrom'
     curve.tension = 0.5
