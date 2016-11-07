@@ -47,11 +47,6 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
     this.camera.position.y = this.distance * Math.sin(this.rotation.y)
     this.camera.position.z = this.distance * Math.cos(this.rotation.x) * Math.cos(this.rotation.y)
 
-    if(this.atmosCloudMesh) {
-      this.atmosCloudMesh.rotation.y += 0.00008
-      this.atmosCloudMesh.rotation.x += 0.0001
-    }
-
     this.camera.lookAt(this.scene.position)
   }
 

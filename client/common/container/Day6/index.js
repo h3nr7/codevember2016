@@ -13,6 +13,7 @@ export default class Day extends Component {
   render() {
     return(
       <div className="day__container">
+        <h1 className="inprogress">working on it...</h1>
       </div>
     )
   }

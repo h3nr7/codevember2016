@@ -112,6 +112,15 @@ export default class Day extends BasicThreeWithCam {
     this.scene.add(this.atmosCloudMesh)
   }
 
+  tick() {
+    super.tick()
+    
+    if(this.atmosCloudMesh) {
+      this.atmosCloudMesh.rotation.y += 0.00008
+      this.atmosCloudMesh.rotation.x += 0.0001
+    }
+  }
+
 
   render() {
     return(
