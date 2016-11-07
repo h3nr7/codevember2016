@@ -59,8 +59,6 @@ export default class Day extends BasicThreeWithCam {
     this.cylinderMesh.scale.set( 1, 1, 1 )
     this.cylinderMesh.updateMatrix()
 
-    console.log(this.cylinderMesh)
-
     // Add GUI
     this.guiCyMaterial = this.guiAddFolder('Cylinder Material', true)
     this.guiAdd(this.guiCyMaterial, this.cylinderMaterial, 'wireframe')
@@ -89,7 +87,6 @@ export default class Day extends BasicThreeWithCam {
   initPoint({ pointArr = [] } = {}) {
     let geo = new Geometry()
     geo.vertices = pointArr
-    console.log(geo)
     this.dotMaterial = new PointsMaterial({
       color: 0xff00ff,
       size: 5,

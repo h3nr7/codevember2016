@@ -60,8 +60,6 @@ export default class Day extends BasicThreeWithCam {
     this.cylinderMesh.scale.set( 1, 1, 1 )
     this.cylinderMesh.updateMatrix()
 
-    console.log(this.cylinderMesh)
-
     // Add GUI
     this.guiCyMaterial = this.guiAddFolder('Cylinder Material', true)
     this.guiAdd(this.guiCyMaterial, this.cylinderMaterial, 'wireframe')
@@ -104,7 +102,6 @@ export default class Day extends BasicThreeWithCam {
 
     this.camera.lookAt(this.scene.position)
 
-    console.log(this.target)
   }
 
   render() {
