@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import * as THREE from 'three'
-import AbstractThreeIndex from 'container/Day0/AbstractThreeIndex'
+import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
 import earthVert from './shader/earth.vert'
 import earthFrag from './shader/earth.frag'
 import cloudVert from './shader/cloud.vert'
@@ -8,9 +8,8 @@ import cloudFrag from './shader/cloud.frag'
 import atmosVert from './shader/atmosphere.vert'
 import atmosFrag from './shader/atmosphere.frag'
 
-const PI_HALF = Math.PI / 2
 
-export default class Day extends AbstractThreeIndex {
+export default class Day extends BasicThreeWithCam {
 
   constructor() {
     super()
@@ -18,17 +17,6 @@ export default class Day extends AbstractThreeIndex {
 
   componentWillMount() {
     super.componentWillMount()
-
-    this.isMouseDown = false
-    this.mouse = { x:0, y:0 }
-    this.mouseOnDown = { x:0, y:0 }
-    this.rotation = { x:0 , y:0 , z:0 }
-    this.target = { x: Math.PI*3/2, y: Math.PI / 6.0 }
-    this.targetOnDown = { x: 0, y: 0 }
-
-    this.distance = 1000
-    this.distanceTarget = 1000
-    this.padding = 40
 
     this.loaderManager = new THREE.LoadingManager()
     this.textureLoader = new THREE.TextureLoader(this.loaderManager)
@@ -60,73 +48,6 @@ export default class Day extends AbstractThreeIndex {
     this.scene.fog = new THREE.Fog(0xfffff, 0, 1000);
   }
 
-  initCamera(aspect, z = 300, viewAngle = 30, near = 1, far = 1000000) {
-    super.initCamera(aspect, this.distance, viewAngle, near, far)
-  }
-
-
-
-  tick() {
-
-    this.rotation.x += (this.target.x - this.rotation.x) * 0.1
-    this.rotation.y += (this.target.y - this.rotation.y) * 0.1
-    this.distance += (this.distanceTarget - this.distance) * 0.3
-
-    this.camera.position.x = this.distance * Math.sin(this.rotation.x) * Math.cos(this.rotation.y)
-    this.camera.position.y = this.distance * Math.sin(this.rotation.y)
-    this.camera.position.z = this.distance * Math.cos(this.rotation.x) * Math.cos(this.rotation.y)
-
-    if(this.atmosCloudMesh) {
-      this.atmosCloudMesh.rotation.y += 0.00008
-      this.atmosCloudMesh.rotation.x += 0.0001
-    }
-
-    this.camera.lookAt(this.scene.position)
-  }
-
-  zoom(z) {
-    this.distanceTarget -= z
-    this.distanceTarget = this.distanceTarget > 1500 ? 1500 : this.distanceTarget
-    this.distanceTarget = this.distanceTarget < 500 ? 500 : this.distanceTarget
-  }
-
-  mouseDown(event) {
-    event.preventDefault()
-    this.isMouseDown = true
-
-    this.mouseOnDown.x = - event.clientX
-    this.mouseOnDown.y = event.clientY
-
-    this.targetOnDown.x = this.target.x
-    this.targetOnDown.y = this.target.y
-  }
-
-  mouseUp(event) {
-    this.isMouseDown = false
-  }
-
-  mouseOut(event) {
-    this.isMouseDown = false
-  }
-
-  mouseWheel(event) {
-    event.preventDefault()
-    this.zoom(event.deltaY * 0.3)
-  }
-
-  mouseMove(event) {
-    if(this.isMouseDown) {
-      this.mouse.x = - event.clientX;
-      this.mouse.y = event.clientY;
-      let zoomDamp = this.distance/1000;
-
-      this.target.x = this.targetOnDown.x + (this.mouse.x - this.mouseOnDown.x) * 0.005 * zoomDamp;
-      this.target.y = this.targetOnDown.y + (this.mouse.y - this.mouseOnDown.y) * 0.005 * zoomDamp;
-
-      this.target.y = this.target.y > PI_HALF ? PI_HALF : this.target.y;
-      this.target.y = this.target.y < - PI_HALF ? - PI_HALF : this.target.y;
-    }
-  }
 
   /**
    * world Texture load handler and add to scene

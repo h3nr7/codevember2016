@@ -62,12 +62,11 @@ export default class AbstractThreeDay extends Component {
    * @return {[type]} [description]
    */
   init() {
-    let { width, height } = this.state
 
     this.scene = new THREE.Scene()
 
-    this.initRenderer(width, height)
-    this.initCamera(width/height)
+    this.initRenderer()
+    this.initCamera()
 
     // attach the render-supplied DOM element
     this.container.appendChild(this.renderer.domElement)
@@ -80,10 +79,12 @@ export default class AbstractThreeDay extends Component {
    * @param  {[type]} height =             0 [description]
    * @return {[type]}        [description]
    */
-  initRenderer(width = 0, height = 0) {
+  initRenderer({ bgColor = 0x000000 } = {}) {
+    let { width, height } = this.state
     this.renderer = new THREE.WebGLRenderer()
     this.renderer.setPixelRatio( window.devicePixelRatio )
     this.renderer.setSize(width, height)
+    this.renderer.setClearColor(bgColor, 1 )
   }
 
   /**
@@ -95,9 +96,11 @@ export default class AbstractThreeDay extends Component {
    * @param  {[type]} far       =             10000 [description]
    * @return {[type]}           [description]
    */
-  initCamera(aspect, z = 300, viewAngle = 45, near = 0.1, far = 10000) {
+  initCamera(z = 300, viewAngle = 45, near = 0.1, far = 10000) {
 
-    this.camera = new THREE.PerspectiveCamera (viewAngle, aspect, near, far)
+    let { width, height } = this.state
+
+    this.camera = new THREE.PerspectiveCamera (viewAngle, width/height, near, far)
 
     this.scene.add(this.camera)
     // the camera starts at 0,0,0
