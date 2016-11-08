@@ -119,25 +119,19 @@ export default class Day extends BasicThreeWithCam {
     this.ribbonGeo = new THREE.Geometry()
     for( let i = 0; i < divisions; i+=2) {
       for( let j = 0; j < 2; j++) {
-        console.log('l', this.binormals, i, j)
+
         let bi = this.binormals[i+j].clone().multiplyScalar(5).add(this.mainGeo[i+j])
         let biReflect = this.binormals[i+j].clone().multiplyScalar(-5).add(this.mainGeo[i+j])
-        console.log(this.mainGeo, biReflect)
 
         this.ribbonGeo.vertices.push(bi)
         this.ribbonGeo.vertices.push(biReflect)
       }
     }
 
-    for( let k = 0, kl = divisions * 2; k < kl; k++) {
+    for( let k = 0, kl = divisions * 2 - 2; k < kl; k+=2) {
       this.ribbonGeo.faces.push(new THREE.Face3(k, k+1, k+2))
       this.ribbonGeo.faces.push(new THREE.Face3(k+1, k+3, k+2))
     }
-
-    // this.ribbonGeo.faces.push(
-    // new THREE.Face3(2,1,0),//use vertices of rank 2,1,0
-    // new THREE.Face3(3,1,2)//vertices[3],1,2...
-    // );
 
     console.log(this.ribbonGeo)
 
