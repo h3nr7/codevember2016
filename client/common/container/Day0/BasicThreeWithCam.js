@@ -108,7 +108,8 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
    */
   guiAdd(folder, obj, name) {
     folder = !!folder ? folder : this.gui
-    folder.add(obj, name)
+    let controller = folder.add(obj, name)
+    return controller
   }
 
   render() {

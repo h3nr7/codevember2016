@@ -111,8 +111,6 @@ export default class Day extends BasicThreeWithCam {
 
     let test = new RibbonBufferGeometry()
 
-    console.log('test', test)
-
     let mesh = new THREE.Mesh(geo, material)
     console.log('mma 1', mesh.geometry.normals[1])
     mesh.geometry.tangents = normals
