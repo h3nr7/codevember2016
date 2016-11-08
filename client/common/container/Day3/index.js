@@ -74,8 +74,36 @@ export default class Day extends BasicThreeWithCam {
   }
 
   cloudLoaded(tex) {
+    let geo = new THREE.SphereGeometry(200, 40, 30)
 
-c  }
+    this.atmosMaterial = new THREE.ShaderMaterial({
+      uniforms: {},
+      vertexShader: atmosVert,
+      fragmentShader: atmosFrag,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true
+    })
+
+    this.atmosMesh = new THREE.Mesh(geo, this.atmosMaterial)
+    this.atmosMesh.scale.set(1.04, 1.04, 1.04)
+
+    this.cloudMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        percent: { type: 'f', value: 1.0 },
+        texture: { type: 't', value: tex }
+      },
+      vertexShader: cloudVert,
+      fragmentShader: cloudFrag,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      depthWrite: false
+    })
+
+    this.atmosCloudMesh = new THREE.Mesh(geo, this.cloudMaterial)
+    this.atmosCloudMesh.scale.set(1.04, 1.04, 1.04)
+  }
 
   onLoadComplete() {
     this.scene.add(this.earthMesh)
