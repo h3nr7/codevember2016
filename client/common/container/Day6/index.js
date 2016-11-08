@@ -3,7 +3,6 @@ import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
 import * as THREE from 'three'
 
 
-import RibbonBufferGeometry from 'lib/RibbonBufferGeometry'
 import ThreeNormalHelper from 'lib/ThreeNormalHelper'
 import Quad from 'lib/ThreeQuad'
 
@@ -108,8 +107,6 @@ export default class Day extends BasicThreeWithCam {
     // let circle = new THREE.CylinderGeometry(40, 40, 80, 8, 10)
     //
     let geo = new THREE.TubeBufferGeometry( curve, tubularSegments, 10, 2, true )
-
-    let test = new RibbonBufferGeometry()
 
     let mesh = new THREE.Mesh(geo, material)
     console.log('mma 1', mesh.geometry.normals[1])
