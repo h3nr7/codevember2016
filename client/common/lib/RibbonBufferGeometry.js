@@ -5,9 +5,34 @@ import {
 
  export default class RibbonBufferGeometry extends BufferGeometry {
 
-   constructor() {
+   constructor({ path, normalPath, tubularSegments = 64, radius = 2, closed } = {}) {
      super()
+
+     this.parameters = {
+       path: path,
+       tubularSegments: tubularSegments,
+       radius: radius,
+       closed: closed
+     }
+
+    //  this.tangents = 
    }
 
-   
+   generateBufferData() {
+
+   }
+
+   generateSegment( i ) {
+
+   }
+
+   generateIndices() {
+
+   }
+
+   generateUVs() {
+
+   }
+
+
  }

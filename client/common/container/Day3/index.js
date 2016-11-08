@@ -75,36 +75,7 @@ export default class Day extends BasicThreeWithCam {
 
   cloudLoaded(tex) {
 
-    let geo = new THREE.SphereGeometry(200, 40, 30)
-
-    let material = new THREE.ShaderMaterial({
-      uniforms: {},
-      vertexShader: atmosVert,
-      fragmentShader: atmosFrag,
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true
-    })
-
-    this.atmosMesh = new THREE.Mesh(geo, material)
-    this.atmosMesh.scale.set(1.04, 1.04, 1.04)
-
-    material = new THREE.ShaderMaterial({
-      uniforms: {
-        percent: { type: 'f', value: 1.0 },
-        texture: { type: 't', value: tex }
-      },
-      vertexShader: cloudVert,
-      fragmentShader: cloudFrag,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-      depthWrite: false
-    })
-
-    this.atmosCloudMesh = new THREE.Mesh(geo, material)
-    this.atmosCloudMesh.scale.set(1.04, 1.04, 1.04)
-  }
+c  }
 
   onLoadComplete() {
     this.scene.add(this.earthMesh)
@@ -114,7 +85,7 @@ export default class Day extends BasicThreeWithCam {
 
   tick() {
     super.tick()
-    
+
     if(this.atmosCloudMesh) {
       this.atmosCloudMesh.rotation.y += 0.00008
       this.atmosCloudMesh.rotation.x += 0.0001
