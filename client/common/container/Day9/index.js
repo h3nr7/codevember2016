@@ -5,12 +5,15 @@ import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
 import { generateRandomColor } from 'lib/GenericHelper'
 import CanvasCacher from './CanvasCacher'
 import RibbonGeometry from 'lib/RibbonGeometry'
+import ThreeNormalHelper from 'lib/ThreeNormalHelper'
+
 
 export default class Day extends BasicThreeWithCam {
 
   constructor() {
     super()
     this.hideCanvas = true
+    this.stopFrame = false
 
   }
 
@@ -29,9 +32,14 @@ export default class Day extends BasicThreeWithCam {
     let canvas = ReactDOM.findDOMNode(this.canvas)
     this.ctx = canvas.getContext('2d')
 
-    let curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(0,10,0), new THREE.Vector3(50, 50, 70), new THREE.Vector3(100, 100, 100))
-    let refCurve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(20, 20, 0), new THREE.Vector3(60, 60, 60), new THREE.Vector3(120, 120, 120))
+    // let curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(0,10,0), new THREE.Vector3(50, 50, 70), new THREE.Vector3(100, 100, 100))
+    // let refCurve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(20, 20, 0), new THREE.Vector3(60, 60, 60), new THREE.Vector3(120, 120, 120))
 
+    let cylinder = this.initCylinder()
+    console.log('lala', cylinder.combinedNormals, cylinder.vertices)
+
+    let curve = new THREE.CatmullRomCurve3(cylinder.vertices)
+    let refCurve = new THREE.CatmullRomCurve3(cylinder.combinedNormals)
 
     this._buildBlocks()
 
@@ -39,8 +47,8 @@ export default class Day extends BasicThreeWithCam {
     let ribbonGeo = new RibbonGeometry({
       curve: curve,
       referenceCurve: refCurve,
-      numSegments: 24,
-      width: 256
+      numSegments: 800,
+      width: 20
     })
 
     this.texture = new THREE.Texture(canvas)
@@ -52,9 +60,9 @@ export default class Day extends BasicThreeWithCam {
     let mesh = new THREE.Mesh(ribbonGeo, material)
 
 
-    console.log(ribbonGeo)
 
     this.gui.add(this, 'hideCanvas')
+    this.gui.add(this, 'stopFrame')
 
     this.scene.add(mesh)
 
@@ -79,12 +87,51 @@ export default class Day extends BasicThreeWithCam {
     }
   }
 
+  initCylinder() {
+
+    this.cylinderMaterial = new THREE.MeshBasicMaterial({
+      color: 0xFF00FF,
+      visible: false,
+      wireframe: true
+    })
+
+    let geo = new THREE.CylinderGeometry(80, 240, 40, 16, 10)
+
+    this.cylinderMesh = new THREE.Mesh( geo, this.cylinderMaterial )
+    this.cylinderMesh.scale.set(2, 2, 2)
+
+    this.cylinderMesh.updateMatrix()
+    this.cylinderMesh.geometry.applyMatrix( this.cylinderMesh.matrix )
+    this.cylinderMesh.position.set( 0, 0, 0 )
+    this.cylinderMesh.rotation.set( 0, 0, 0 )
+    this.cylinderMesh.scale.set( 1, 1, 1 )
+    this.cylinderMesh.updateMatrix()
+
+    geo.mergeVertices()
+    geo.computeFaceNormals()
+    geo.computeVertexNormals( true )
+
+
+    let nHelper = new ThreeNormalHelper(geo)
+
+    let normals = nHelper.getVertexNormals()
+    let combinedNormals = nHelper.getCombinedNormals()
+    let vertices = nHelper.getVertices()
+
+    this.scene.add(this.cylinderMesh)
+
+    console.log(geo)
+
+    return { normals, combinedNormals, vertices }
+  }
+
+
 
   tick() {
     if(this.texture) this.texture.needsUpdate = true
 
     ReactDOM.findDOMNode(this.canvas).style.display = this.hideCanvas ? 'none' : 'block'
-    this._buildBlocks()
+    if(!this.stopFrame) this._buildBlocks()
     super.tick()
   }
 
