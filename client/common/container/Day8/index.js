@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
 import * as THREE from 'three'
 
-import RibbonBufferGeometry from 'lib/RibbonBufferGeometry'
-
 export default class Day extends BasicThreeWithCam {
 
   constructor() {
@@ -89,11 +87,9 @@ export default class Day extends BasicThreeWithCam {
       this.ar3 = new THREE.ArrowHelper( bi, geo1.vertices[i], this.settings.lineLen, 0x663300 )
       this.scene.add(this.ar3)
 
-      let biReflect = bi.clone().multiplyScalar(-1)
-
-
-      this.ar4 = new THREE.ArrowHelper( biReflect, geo1.vertices[i], this.settings.lineLen, 0x663300 )
-      this.scene.add(this.ar4)
+      // let biReflect = bi.clone().multiplyScalar(-1)
+      // this.ar4 = new THREE.ArrowHelper( biReflect, geo1.vertices[i], this.settings.lineLen, 0x663300 )
+      // this.scene.add(this.ar4)
 
 
     })
