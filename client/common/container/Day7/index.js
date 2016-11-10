@@ -135,17 +135,17 @@ export default class Day extends BasicThreeWithCam {
   cloudLoaded(tex) {
     let geo = new THREE.SphereGeometry(200, 40, 30)
 
-    this.atmosMaterial = new THREE.ShaderMaterial({
-      uniforms: {},
-      vertexShader: atmosVert,
-      fragmentShader: atmosFrag,
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true
-    })
-
-    this.atmosMesh = new THREE.Mesh(geo, this.atmosMaterial)
-    this.atmosMesh.scale.set(1.04, 1.04, 1.04)
+    // this.atmosMaterial = new THREE.ShaderMaterial({
+    //   uniforms: {},
+    //   vertexShader: atmosVert,
+    //   fragmentShader: atmosFrag,
+    //   side: THREE.BackSide,
+    //   blending: THREE.AdditiveBlending,
+    //   transparent: true
+    // })
+    //
+    // this.atmosMesh = new THREE.Mesh(geo, this.atmosMaterial)
+    // this.atmosMesh.scale.set(1.04, 1.04, 1.04)
 
     this.cloudMaterial = new THREE.ShaderMaterial({
       uniforms: {
@@ -167,14 +167,14 @@ export default class Day extends BasicThreeWithCam {
 
   loadComplete() {
     this.scene.add(this.earthMesh)
-    this.scene.add(this.atmosMesh)
+    // this.scene.add(this.atmosMesh)
     this.scene.add(this.atmosCloudMesh)
 
     // Add GUI
     this.guiGlobeMaterial = this.guiAddFolder('Globe', true)
     this.guiAdd(this.guiGlobeMaterial, this.earthMaterial, 'visible')
     this.guiAdd(this.guiGlobeMaterial, this.cloudMaterial, 'visible')
-    this.guiAdd(this.guiGlobeMaterial, this.atmosMaterial, 'visible')
+    // this.guiAdd(this.guiGlobeMaterial, this.atmosMaterial, 'visible')
 
     this.guiLocationMaterial = this.guiAddFolder('Locations')
     this.guiAdd(this.guiLocationMaterial, this.cityMaterial, 'visible')

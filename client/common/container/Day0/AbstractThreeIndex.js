@@ -79,9 +79,9 @@ export default class AbstractThreeDay extends Component {
    * @param  {[type]} height =             0 [description]
    * @return {[type]}        [description]
    */
-  initRenderer({ bgColor = 0x000000 } = {}) {
+  initRenderer({ bgColor = 0x000000, antialias = true } = {}) {
     let { width, height } = this.state
-    this.renderer = new THREE.WebGLRenderer()
+    this.renderer = new THREE.WebGLRenderer({antialias: antialias})
     this.renderer.setPixelRatio( window.devicePixelRatio )
     this.renderer.setSize(width, height)
     this.renderer.setClearColor(bgColor, 1 )
