@@ -3,8 +3,6 @@ import earthVert from './shader/earth.vert'
 import earthFrag from './shader/earth.frag'
 import cloudVert from './shader/cloud.vert'
 import cloudFrag from './shader/cloud.frag'
-import atmosVert from './shader/atmosphere.vert'
-import atmosFrag from './shader/atmosphere.frag'
 
 const PI = Math.PI
 const DEFAULT_TEXTURES = {
