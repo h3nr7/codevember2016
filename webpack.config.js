@@ -5,7 +5,13 @@ const WriteFilePlugin     = require('write-file-webpack-plugin')
 const CopyWebpackPlugin   = require('copy-webpack-plugin')
 const serverConfig        = require('./server.config.js')
 
-const nodeModulesPath     = path.resolve(__dirname, 'node_modules')
+const BASE_DIR_PATH       = path.resolve(__dirname)
+const NODE_MODULES_PATH   = path.resolve(__dirname, 'node_modules')
+const CLIENT_PATH         = path.resolve(__dirname, 'client')
+const COMMON_PATH         = path.resolve(__dirname, 'client', 'common')
+const OUTPUT_PATH         = path.resolve(__dirname, 'public')
+const ENTRY_APP_PATH      = path.resolve(CLIENT_PATH, 'app.js')
+const ENTRY_CSS_PATH      = path.resolve(CLIENT_PATH, 'style', 'main.scss')
 
 let extractCSSPath = 'stylesheet.css'
 const config = {
@@ -15,14 +21,14 @@ const config = {
       'node_modules'
     ],
     root: [
-      path.resolve(__dirname, 'client', 'common')
+      COMMON_PATH
     ],
     extensions: ['', '.js', '.scss']
   },
   // entry: {}
   devtool: "eval-source-map",
   output: {
-    path: path.resolve(__dirname, 'public'),
+    path: OUTPUT_PATH,
     filename: "app.js",
     publicPath: '/public/'
   },
@@ -30,7 +36,7 @@ const config = {
     preloaders: [
       {
         test: /\.js$/, // include .js files
-        exclude: [nodeModulesPath],
+        exclude: [NODE_MODULES_PATH],
         loader: "jshint-loader"
       }
     ],
@@ -40,7 +46,7 @@ const config = {
       {
         test: /\.js$/,
         loader: serverConfig.isLocal ?  'babel-loader!react-hot' : 'babel-loader',
-        exclude: [nodeModulesPath, __dirname+'/client/**/__test__'],
+        exclude: [NODE_MODULES_PATH, __dirname+'/client/**/__test__'],
         query: {
           cacheDirectory: true,
           presets: ['react', 'es2015']
@@ -55,7 +61,7 @@ const config = {
     ],
   },
   sassLoader: {
-    includePaths: [path.resolve(__dirname, 'client')]
+    includePaths: [CLIENT_PATH]
   },
   plugins: [
     new CopyWebpackPlugin([
@@ -75,18 +81,19 @@ switch(process.env.NODE_ENV) {
   default:
   case 'local':
     config.devServer = {
-      outputPath: path.join(__dirname, './public')
+      // THIS MUST BE THE SAME AS THE config.output.path above
+      outputPath: OUTPUT_PATH
     }
     config.entry = [
-      path.resolve(__dirname, 'client', 'app.js'),
-      path.resolve(__dirname, 'client', 'style', 'main.scss'),
+      ENTRY_APP_PATH,
+      ENTRY_CSS_PATH,
       // For hot style updates
       'webpack/hot/dev-server',
       // The script refreshing the browser on none hot updates
       'webpack-dev-server/client?http://localhost:' + serverConfig.wpPort
     ]
     config.output = {
-      path: path.resolve(__dirname),
+      path: BASE_DIR_PATH,
       filename: "build/app.js"
     }
     config.plugins.push(
@@ -103,8 +110,8 @@ switch(process.env.NODE_ENV) {
     config.entry = {
       vendor: ['react', 'react-dom', 'react-router', 'react-redux', 'redux', 'react-router-redux', 'd3', 'three'],
       app: [
-        path.resolve(__dirname, 'client', 'app.js'),
-        path.resolve(__dirname, 'client', 'style', 'main.scss')
+        ENTRY_APP_PATH,
+        ENTRY_CSS_PATH
       ]
     }
     config.plugins.push(
@@ -151,7 +158,7 @@ const extractCSS = new ExtractTextPlugin(extractCSSPath)
 config.module.loaders.push({
   test: /\.scss$/,
   loader: extractCSS.extract("css-loader!sass-loader!autoprefixer-loader"),
-  exclude: [nodeModulesPath]
+  exclude: [NODE_MODULES_PATH]
 })
 config.plugins.push(extractCSS)
 

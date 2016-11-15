@@ -11,6 +11,7 @@ export default class AbstractThreeDay extends Component {
   componentWillMount() {
     this.animate = this.animate.bind(this)
     this.onResize = this.onResize.bind(this)
+    
     this.setState({
       width: window.innerWidth,
       height: window.innerHeight

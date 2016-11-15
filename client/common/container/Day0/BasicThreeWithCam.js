@@ -1,10 +1,18 @@
 import AbstractThreeIndex from './AbstractThreeIndex'
+import { DirectionalLight } from 'three'
 const PI_HALF = Math.PI / 2
 
 export default class BasicThreeWithCam extends AbstractThreeIndex {
 
-  constructor() {
+  constructor(opts = {}) {
     super()
+
+    this.options = Object.assign({
+      hasLight: false,
+      lightIntensity: 0.6,
+      zoomMax: 1500,
+      zoomMin: 500
+    }, opts)
   }
 
   componentWillMount() {
@@ -33,11 +41,25 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
     this.container.appendChild(this.gui.domElement)
   }
 
+  init() {
+    super.init()
+    this.time = 0
+    this.startTime = Date.now()
+    if( this.options.hasLight ) this.initLight()
+  }
+
   initCamera(z = 300, viewAngle = 30, near = 1, far = 1000000) {
     super.initCamera(this.distance, viewAngle, near, far)
   }
 
+  initLight() {
+    this.directLight = new DirectionalLight(0xFFFFFF, this.options.lightIntensity)
+    this.scene.add(this.directLight)
+  }
+
   tick() {
+
+    this.time = Date.now() - this.startTime
 
     this.rotation.x += (this.target.x - this.rotation.x) * 0.1
     this.rotation.y += (this.target.y - this.rotation.y) * 0.1
@@ -47,13 +69,19 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
     this.camera.position.y = this.distance * Math.sin(this.rotation.y)
     this.camera.position.z = this.distance * Math.cos(this.rotation.x) * Math.cos(this.rotation.y)
 
+    if(this.directLight) {
+      let { x, y, z } = this.camera.position
+      this.directLight.position.set(x, y, z)
+    }
+
     this.camera.lookAt(this.scene.position)
   }
 
   zoom(z) {
+    let { zoomMax, zoomMin } = this.options
     this.distanceTarget -= z
-    this.distanceTarget = this.distanceTarget > 1500 ? 1500 : this.distanceTarget
-    this.distanceTarget = this.distanceTarget < 500 ? 500 : this.distanceTarget
+    this.distanceTarget = this.distanceTarget > zoomMax ? zoomMax : this.distanceTarget
+    this.distanceTarget = this.distanceTarget < zoomMin ? zoomMin : this.distanceTarget
   }
 
   mouseDown(event) {

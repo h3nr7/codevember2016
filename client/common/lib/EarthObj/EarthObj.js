@@ -18,6 +18,7 @@ export default class EarthObj {
 
     this.options = Object.assign({
       earthSize: 200,
+      cityFloatDistance: 3,
       isRotating: false,
       groundTexture: DEFAULT_TEXTURES.groundTexture,
       atmosphereTexture: DEFAULT_TEXTURES.atmosphereTexture,
@@ -27,6 +28,8 @@ export default class EarthObj {
     this.isLoaded = false
     this.isFlattened = false
     this.group = new THREE.Object3D()
+
+    this.cities = {}
 
     this.earthUniform = {
       texture: { type: 't', value: null },
@@ -64,8 +67,8 @@ export default class EarthObj {
    */
   getVectorByLatLng(lat, lng) {
 
-    let { earthSize } = this.options
-
+    let { earthSize, cityFloatDistance } = this.options
+    let distance = earthSize + cityFloatDistance
     let phi = -( 90 - lat ) * PI / 180
     let theta = ( 180 - lng ) * PI / 180
 
@@ -74,12 +77,42 @@ export default class EarthObj {
     let sinTheta = Math.sin(theta)
     let cosTheta = Math.cos(theta)
 
-    let x = ( earthSize * sinPhi * cosTheta )
-    let y = ( earthSize * cosPhi )
-    let z = ( earthSize * sinPhi * sinTheta )
+    let x = ( distance * sinPhi * cosTheta )
+    let y = ( distance * cosPhi )
+    let z = ( distance * sinPhi * sinTheta )
 
     return new THREE.Vector3(x, y, z)
   }
+
+  addCity({ name = 'london', lat = 51.509865, lng = -0.118092 } = {}) {
+
+    let pos = this.getVectorByLatLng(lat, lng)
+    let material = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      shininess: 0,
+      shading: THREE.FlatShading
+    })
+
+    let geom = new THREE.SphereGeometry(1, 4, 4)
+    let city = {
+      position: pos,
+      material,
+      mesh: new THREE.Mesh(geom, material)
+    }
+
+    city.mesh.position.x = pos.x
+    city.mesh.position.y = pos.y
+    city.mesh.position.z = pos.z
+    city.mesh.lookAt(new THREE.Vector3())
+    this.group.add(city.mesh)
+
+    this.cities[name] = city
+  }
+
+  getCity(name) {
+    return this.cities[name]
+  }
+
 
   /**
    * world texture loaded handler
@@ -93,7 +126,8 @@ export default class EarthObj {
     this.earthMaterial = new THREE.ShaderMaterial({
       uniforms: this.earthUniform,
       vertexShader: earthVert,
-      fragmentShader: earthFrag
+      fragmentShader: earthFrag,
+      visible: true
     })
 
     this.earthGeometry = new THREE.SphereGeometry(this.options.earthSize, 40, 30)
@@ -118,7 +152,8 @@ export default class EarthObj {
       side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       transparent: true,
-      depthWrite: false
+      depthWrite: false,
+      visible: true
     })
 
     this.atmosphereGeometry = new THREE.SphereGeometry(this.options.earthSize, 40, 30)
