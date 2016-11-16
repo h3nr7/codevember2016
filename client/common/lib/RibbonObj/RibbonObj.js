@@ -62,6 +62,7 @@ export default class RibbonObj {
       // wireframe: true,
       map: this.options.texture,
       shininess: 0,
+      transparent: true,
       shading: THREE.FlatShading
     })
 

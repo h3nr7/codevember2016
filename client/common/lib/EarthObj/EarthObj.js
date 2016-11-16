@@ -20,6 +20,7 @@ export default class EarthObj {
       earthSize: 200,
       cityFloatDistance: 3,
       isRotating: false,
+      visible: true,
       groundTexture: DEFAULT_TEXTURES.groundTexture,
       atmosphereTexture: DEFAULT_TEXTURES.atmosphereTexture,
       onLoadComplete: undefined
@@ -127,7 +128,7 @@ export default class EarthObj {
       uniforms: this.earthUniform,
       vertexShader: earthVert,
       fragmentShader: earthFrag,
-      visible: true
+      visible: this.options.visible
     })
 
     this.earthGeometry = new THREE.SphereGeometry(this.options.earthSize, 40, 30)
@@ -153,7 +154,7 @@ export default class EarthObj {
       blending: THREE.AdditiveBlending,
       transparent: true,
       depthWrite: false,
-      visible: true
+      visible: this.options.visible
     })
 
     this.atmosphereGeometry = new THREE.SphereGeometry(this.options.earthSize, 40, 30)
