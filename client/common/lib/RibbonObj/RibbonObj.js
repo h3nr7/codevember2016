@@ -29,7 +29,7 @@ export default class RibbonObj {
     this.geometry.vertices.push
     this.geometry.vertices.push(this.end)
 
-    this.curve = new THREE.SplineCurve3([this.start, this.midpoint, this.midpoint2, this.midpoint3, this.end])
+    this.curve = new THREE.CatmullRomCurve3([this.start, this.midpoint, this.midpoint2, this.midpoint3, this.end])
     this.curveGeometry = new THREE.Geometry()
     this.curveGeometry.vertices = this.curve.getPoints( this.options.numPoint )
 

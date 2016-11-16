@@ -18,6 +18,7 @@ export default class EarthObj {
 
     this.options = Object.assign({
       earthSize: 200,
+      citySize: 2,
       cityFloatDistance: 3,
       isRotating: false,
       visible: true,
@@ -94,7 +95,7 @@ export default class EarthObj {
       shading: THREE.FlatShading
     })
 
-    let geom = new THREE.SphereGeometry(1, 4, 4)
+    let geom = new THREE.SphereGeometry(this.options.citySize, 4, 4)
     let city = {
       position: pos,
       material,
@@ -105,6 +106,7 @@ export default class EarthObj {
     city.mesh.position.y = pos.y
     city.mesh.position.z = pos.z
     city.mesh.lookAt(new THREE.Vector3())
+    city.mesh.name = name
     this.group.add(city.mesh)
 
     this.cities[name] = city
@@ -133,6 +135,7 @@ export default class EarthObj {
 
     this.earthGeometry = new THREE.SphereGeometry(this.options.earthSize, 40, 30)
     this.earthMesh = new THREE.Mesh(this.earthGeometry, this.earthMaterial)
+    this.earthMesh.name = 'globe'
   }
 
   /**
@@ -160,6 +163,7 @@ export default class EarthObj {
     this.atmosphereGeometry = new THREE.SphereGeometry(this.options.earthSize, 40, 30)
     this.atmosphereMesh = new THREE.Mesh(this.atmosphereGeometry, this.atmosphereMaterial)
     this.atmosphereMesh.scale.set(1.04, 1.04, 1.04)
+    this.atmosphereMesh.name = 'atmosphere'
 
   }
 
@@ -204,6 +208,12 @@ export default class EarthObj {
 
     if(this.group && this.options.isRotating) {
       this.group.rotation.y -= 0.001
+
+      // an alternative version using a generator expression
+      Object.keys(this.cities).forEach(key => {
+        this.cities[key].mesh.rotation.y += 0.03
+      })
+
     }
 
     if(this.atmosphereMesh) {

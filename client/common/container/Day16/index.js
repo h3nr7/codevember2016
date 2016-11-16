@@ -17,14 +17,19 @@ export default class Day extends BasicThreeWithCam {
      })
 
      this.stopFrame = false
-     this.hideCanvas = true
+     this.hideCanvas = false
+     this.speed0 = 1
+     this.speed1 = 1
+     this.speed2 = 1
+     this.speed3 = 1
+     this.rotate = true
 
   }
 
   componentWillMount() {
     super.componentWillMount()
     this.earth = new EarthObj({
-      isRotating: true,
+      isRotating: this.rotate,
       onLoadComplete: this._earthLoaded.bind(this)
     })
 
@@ -33,6 +38,10 @@ export default class Day extends BasicThreeWithCam {
       canHeight: 256,
       sqNum: 32
     })
+
+    this.raycaster = new THREE.Raycaster()
+    this.raycaster.ray.direction.set(0, -1, 0)
+
   }
 
 
@@ -47,6 +56,13 @@ export default class Day extends BasicThreeWithCam {
 
     this.gui.add(this, 'stopFrame')
     this.gui.add(this, 'hideCanvas')
+    this.gui.add(this, 'rotate')
+
+    this.gui.add(this, 'speed0', 0.01, 10)
+    this.gui.add(this, 'speed1', 0.01, 10)
+    this.gui.add(this, 'speed2', 0.01, 10)
+    this.gui.add(this, 'speed3', 0.01, 10)
+
   }
 
   tick() {
@@ -56,6 +72,33 @@ export default class Day extends BasicThreeWithCam {
     if(!this.stopFrame) this._animBlocks()
     this.canvasDOM.style.display = this.hideCanvas ? 'none' : 'block'
     this.earth.animate()
+
+    this.raycaster.setFromCamera( this.mouseVector, this.camera )
+    let intersects = this.raycaster.intersectObjects( this.earth.group.children )
+
+
+    this.earth.group.children.forEach(v => {
+      if(v.object) v.object.material.wireframe = false
+      else if(v.material) v.material.wireframe = false
+      this.earth.options.isRotating = this.rotate
+    })
+
+    this.currentIntersect = null
+
+    intersects.forEach(v => {
+      if(v.object.name === 'globe' || v.object.name === 'atmosphere') return
+      this.earth.options.isRotating = false
+      v.object.material.wireframe = true
+      this.currentIntersect = v.object.name
+    })
+  }
+
+  mouseDown(evt) {
+    super.mouseDown(evt)
+    console.log(this.currentIntersect)
+    if(!!this.currentIntersect) {
+      alert('Show details of ' + this.currentIntersect)
+    }
   }
 
   _earthLoaded(evt) {
@@ -96,6 +139,7 @@ export default class Day extends BasicThreeWithCam {
 
     this.earth.group.add(this.ribbon5.group)
     this.earth.group.add(this.ribbon6.group)
+
 
   }
 
@@ -140,22 +184,22 @@ export default class Day extends BasicThreeWithCam {
 
     for(let i = 0; i < sqNum+1; i++) {
       if(this.blocksPos[i] > canWidth) this.blocksPos[i] = -canWidth / sqNum
-      this.blocksPos[i]+=1
+      this.blocksPos[i]+= this.speed0
       this.ctx.fillStyle = this.blocks[i]
       this.ctx.fillRect(this.blocksPos[i], 0, canWidth / sqNum ,canHeight/4)
 
       if(this.blocksPos2[i] < -canWidth / 9) this.blocksPos2[i] = canWidth * (sqNum+1)/sqNum
-      this.blocksPos2[i]-=1
+      this.blocksPos2[i]-= this.speed1
       this.ctx.fillStyle = this.blocks2[i]
       this.ctx.fillRect(this.blocksPos2[i], canHeight/4, canWidth / sqNum ,canHeight/4)
 
       if(this.blocksPos3[i] > canWidth) this.blocksPos3[i] = -canWidth / sqNum
-      this.blocksPos3[i]+=1
+      this.blocksPos3[i]+= this.speed2
       this.ctx.fillStyle = this.blocks3[i]
       this.ctx.fillRect(this.blocksPos3[i], canHeight/2, canWidth / sqNum ,canHeight/4)
 
       if(this.blocksPos4[i] < -canWidth / 9) this.blocksPos4[i] = canWidth * (sqNum+1)/sqNum
-      this.blocksPos4[i]-=1
+      this.blocksPos4[i]-= this.speed3
       this.ctx.fillStyle = this.blocks4[i]
       this.ctx.fillRect(this.blocksPos4[i], canHeight*3/4, canWidth / sqNum ,canHeight/4)
     }
@@ -170,14 +214,14 @@ export default class Day extends BasicThreeWithCam {
     let canProps = {
       width: canWidth,
       height: canHeight,
-      left: (width - canWidth) / 2,
-      top: (height - canHeight) / 2,
       style: {
         position: 'absolute',
         display: 'block',
         borderStyle: 'solid',
         borderWeight: '1px',
         borderColor: 'black',
+        left: 0,
+        bottom: 0,
         // zIndex: -99
       }
     }
@@ -189,7 +233,6 @@ export default class Day extends BasicThreeWithCam {
         onMouseDown={this.mouseDown}
         onWheel={this.mouseWheel}
         onMouseOut={this.mouseUp}
-        onMouseMove={this.mouseMove}>
         onMouseMove={this.mouseMove}>
         <CanvasCacher
           {...canProps}

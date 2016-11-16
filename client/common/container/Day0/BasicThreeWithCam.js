@@ -1,5 +1,5 @@
 import AbstractThreeIndex from './AbstractThreeIndex'
-import { DirectionalLight } from 'three'
+import { DirectionalLight, Vector2 } from 'three'
 const PI_HALF = Math.PI / 2
 
 export default class BasicThreeWithCam extends AbstractThreeIndex {
@@ -28,6 +28,8 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
 
     this.distance = 1000
     this.distanceTarget = 1000
+
+    this.mouseVector = new Vector2()
 
     this.gui = new dat.GUI({ autoPlace: false })
 
@@ -109,6 +111,10 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
   }
 
   mouseMove(event) {
+
+    let { width, height } = this.state
+    let { offsetLeft, offsetTop } = this.renderer.domElement || {}
+
     if(this.isMouseDown) {
       this.mouse.x = - event.clientX;
       this.mouse.y = event.clientY;
@@ -119,7 +125,30 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
 
       this.target.y = this.target.y > PI_HALF ? PI_HALF : this.target.y;
       this.target.y = this.target.y < - PI_HALF ? - PI_HALF : this.target.y;
+
     }
+
+
+    this.mouseVector.x = ( (event.clientX - offsetLeft) / width ) * 2 - 1
+    this.mouseVector.y = -( (event.clientY - offsetTop) / height ) * 2 + 1
+    // this.mouseVector.x = ( event.clientX / window.innerWidth ) * 2 - 1
+    // this.mouseVector.y = - ( event.clientY / window.innerHeight ) * 2 + 1
+  }
+
+  /**
+   * on resize handler
+   * @return {[type]} [description]
+   */
+  onResize() {
+
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    })
+
+    this.camera.aspect =  window.innerWidth / window.innerHeight
+    this.camera.updateProjectionMatrix()
+    this.renderer.setSize( window.innerWidth, window.innerHeight)
   }
 
   guiAddFolder(name, isOpen = false) {
