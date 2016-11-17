@@ -5,3 +5,8 @@ export function generateRandomColor(index = '#') {
     return i>5 ? null : a[Math.floor(Math.random()*16)]
   }).join('')
 }
+
+export function generateRandomSetColor(colors = []) {
+  let out = colors[ Math.floor( colors.length * Math.random() ) ]
+  return out
+}

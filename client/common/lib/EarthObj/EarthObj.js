@@ -24,12 +24,16 @@ export default class EarthObj {
       visible: true,
       groundTexture: DEFAULT_TEXTURES.groundTexture,
       atmosphereTexture: DEFAULT_TEXTURES.atmosphereTexture,
-      onLoadComplete: undefined
+      onLoadComplete: undefined,
+      initialRotation: new THREE.Vector3()
     }, opts)
 
     this.isLoaded = false
     this.isFlattened = false
     this.group = new THREE.Object3D()
+    this.group.rotation.x = this.options.initialRotation.x
+    this.group.rotation.y = this.options.initialRotation.y
+    this.group.rotation.z = this.options.initialRotation.z
 
     this.cities = {}
 
@@ -110,6 +114,8 @@ export default class EarthObj {
     this.group.add(city.mesh)
 
     this.cities[name] = city
+
+    return city
   }
 
   getCity(name) {

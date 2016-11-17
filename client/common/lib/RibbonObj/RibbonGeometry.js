@@ -61,6 +61,7 @@ export default class RibbonGeometry {
       this.geometry.faces.push(new THREE.Face3(k+2, k+3, k+1))
     }
 
+    this.geometry.computeFaceNormals()
   }
 
   buildUv() {
@@ -69,7 +70,6 @@ export default class RibbonGeometry {
     let max = this.geometry.boundingBox.max,
         min = this.geometry.boundingBox.min
 
-    console.log(max)
     let offset = new THREE.Vector2(0, 0)
     let range = new THREE.Vector2((max.x - min.x), max.y - min.y)
     let faces = this.geometry.faces

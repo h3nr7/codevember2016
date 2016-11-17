@@ -6,6 +6,7 @@ export default class RibbonObj {
 
     this.options = Object.assign({
       // Normalised
+      name: undefined,
       offsetPosition: new THREE.Vector3(0, 0, 0),
       offsetAmount: 5,
       color: 0x0000FF,
@@ -58,8 +59,6 @@ export default class RibbonObj {
     })
 
     let material = new THREE.MeshPhongMaterial({
-      // color: 0x00ff88,
-      // wireframe: true,
       map: this.options.texture,
       shininess: 0,
       transparent: true,
@@ -67,11 +66,10 @@ export default class RibbonObj {
     })
 
     material.side = THREE.DoubleSide
-    let mesh = new THREE.Mesh(ribbonGeo, material)
+    this.mesh = new THREE.Mesh(ribbonGeo, material)
+    if(this.options.name) this.mesh.name = this.options.name
 
-
-
-    this.group.add(mesh)
+    this.group.add(this.mesh)
   }
 
   /**
@@ -84,16 +82,6 @@ export default class RibbonObj {
    */
   _getMidPoint(v0, v1, fraction = 0.5, verticalFraction = 0.35) {
     let { offsetPosition, offsetAmount } = this.options
-    // let offset = offsetPosition.clone().multiplyScalar(offsetAmount)
-    //
-    // let dir = this.end.clone().sub(this.start)
-    // let len = dir.length()
-    // let dir = v1.clone().sub(v0)
-    // let len = dir.length()
-    // dir = dir.normalize().multiplyScalar( len * fraction)
-    // dir = dir.clone().add(dir.normalize().multiplyScalar(len * verticalFraction))
-    //
-    // return dir
 
     let dir = v1.clone().sub(v0)
     let len = dir.length()

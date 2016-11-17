@@ -29,6 +29,10 @@ import Day28 from 'container/Day28'
 import Day29 from 'container/Day29'
 import Day30 from 'container/Day30'
 
+import HSBCDemo1 from 'container/HSBCDemo1'
+import HSBCDemo2 from 'container/HSBCDemo2'
+import HSBCDemo3 from 'container/HSBCDemo3'
+
 const outDayRoutes = () => {
 
   let output = []
@@ -75,6 +79,26 @@ const outDayRoutes = () => {
     })
 
     counter++
+  })
+
+
+  let hsbcContainer = [
+    HSBCDemo1,
+    HSBCDemo2,
+    HSBCDemo3
+  ]
+
+  let hsbcCounter = 0
+  hsbcContainer.forEach( c => {
+
+    let ver = String( hsbcCounter + 1 )
+
+    output.push({
+      path: '/hsbc/demo/' + ver,
+      component: c
+    })
+
+    hsbcCounter++
   })
 
   return output

@@ -21,6 +21,7 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
 
     this.isMouseDown = false
     this.mouse = { x:0, y:0 }
+    this.mouseRaw = { x: 0, y: 0 }
     this.mouseOnDown = { x:0, y:0 }
     this.rotation = { x:0 , y:0 , z:0 }
     this.target = { x: Math.PI*3/2, y: Math.PI / 6.0 }
@@ -32,7 +33,7 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
     this.mouseVector = new Vector2()
 
     this.gui = new dat.GUI({ autoPlace: false })
-
+    this.gui.close()
   }
 
   componentDidMount() {
@@ -128,7 +129,8 @@ export default class BasicThreeWithCam extends AbstractThreeIndex {
 
     }
 
-
+    this.mouseRaw.x = event.clientX
+    this.mouseRaw.y = event.clientY
     this.mouseVector.x = ( (event.clientX - offsetLeft) / width ) * 2 - 1
     this.mouseVector.y = -( (event.clientY - offsetTop) / height ) * 2 + 1
     // this.mouseVector.x = ( event.clientX / window.innerWidth ) * 2 - 1

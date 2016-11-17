@@ -1,0 +1,12 @@
+
+.hsbcdemo1 {
+
+  &__container {
+
+  }
+
+  &__popup {
+    opacity: 0;
+    transition: opacity 2s;
+  }
+}

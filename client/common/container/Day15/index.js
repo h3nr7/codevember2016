@@ -1,8 +1,13 @@
 import React, { Component } from 'react'
 import * as THREE from 'three'
 import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
+import Fbo from './Fbo'
 import EarthObj from 'lib/EarthObj'
 import ParticleObj from 'lib/ParticleObj'
+import RenderFs from './shader/render_fs.glsl'
+import RenderVs from './shader/render_vs.glsl'
+import SimulationFs from './shader/simulation_fs.glsl'
+import SimulationVs from './shader/simulation_vs.glsl'
 
 export default class Day extends BasicThreeWithCam {
 
@@ -15,6 +20,10 @@ export default class Day extends BasicThreeWithCam {
 
      this.stopFrame = false
 
+     this.fboSettings = {
+       width: 256,
+       height: 256
+     }
 
   }
 
@@ -34,38 +43,99 @@ export default class Day extends BasicThreeWithCam {
     this.earth.load()
     super.init()
 
+    // this.randomData = (( width, height, size ) => {
+    //     let len = width * height * 3
+    //     let data = new Float32Array( len )
+    //     while( len-- ) data[len] = ( Math.random() -.5 ) * size
+    //     return data
+    //   })(this.fboSettings.width, this.fboSettings.height, 256)
+
+    let { width, height } = this.fboSettings
+    this.randomData = this.getSphere(width * height, 16 )
+
+    this.initFbo()
+  }
+
+  getPoint(v,size) {
+    //the 'discard' method, not the most efficient
+    v.x = Math.random() * 2 - 1 ;
+    v.y = Math.random() * 2 - 1 ;
+    v.z = Math.random() * 2 - 1 ;
+    if(v.length()>1) return this.getPoint(v,size);
+    return v.normalize().multiplyScalar(size);
+  }
+
+  getSphere( count, size ){
+
+      var len = count * 3;
+      var data = new Float32Array( len );
+      var p = new THREE.Vector3();
+      for( var i = 0; i < len; i+=3 )
+      {
+          this.getPoint( p, size );
+          data[ i     ] = p.x;
+          data[ i + 1 ] = p.y;
+          data[ i + 2 ] = p.z;
+      }
+      return data;
+  }
+
+  initFbo() {
+    let { width, height } = this.fboSettings
+    let positions = new THREE.DataTexture( this.randomData, width, height, THREE.RGBFormat, THREE.FloatType )
+    positions.needsUpdate = true
+
+    this.simulationShader = new THREE.ShaderMaterial({
+      uniforms: {
+          positions: { type: "t", value: positions },
+          timer: { type: "f", value: 0},
+          frequency: { type: "f", value: 0.01 },
+          amplitude: { type: "f", value: 192 },
+          maxDistance: { type: "f", value: 96 },
+          timer: { type: "f", value: 0.0},
+          attractorPos: { type: "v3", value: new THREE.Vector3(0,0,0) }
+      },
+      vertexShader: SimulationVs,
+      fragmentShader:  SimulationFs
+    })
+
+    this.renderShader = new THREE.ShaderMaterial({
+        uniforms: {
+            positions: { type: "t", value: null },
+            pointSize: { type: "f", value: 2 }
+        },
+        vertexShader: RenderVs,
+        fragmentShader: RenderFs,
+        transparent: true,
+        blending:THREE.AdditiveBlending
+    })
+
+    this.fbo = new Fbo(width, height, this.renderer, this.simulationShader, this.renderShader)
+    this.scene.add( this.fbo.particles )
+
 
   }
 
   tick() {
     super.tick()
 
-    if(this.texture) this.texture.needsUpdate = true
-
     if(this.par) this.par.animate()
     this.earth.animate()
+
+    this.simulationShader.uniforms.timer.value += 0.01
+    if(this.par) this.simulationShader.uniforms.attractorPos.value = this.par.attractorMesh.position
+    this.fbo.update()
   }
 
   _earthLoaded(evt) {
     this.scene.add(this.earth.group)
 
     this.earth.addCity()
-    // this.earth.addCity({ name: 'paris', lat:	48.864716, lng: 2.349014})
     this.earth.addCity({ name: 'hong kong', lat:	22.286394, lng: 114.149139})
-    // this.earth.addCity({ name: 'new york', lat: 40.792240, lng:	-73.138260})
-    // this.earth.addCity({ name: 'beijing', lat: 39.913818, lng:	116.363625})
-    // this.earth.addCity({ name: 'mumbai', lat: 19.075984, lng:	72.877656})
-    // this.earth.addCity({ name: 'milan', lat: 45.464211, lng: 	9.191383 })
-    // this.earth.addCity({ name: 'brazillia', lat: -14.235004, lng: -51.925280 })
 
     let london = this.earth.getCity('london')
-    // let paris = this.earth.getCity('paris')
     let hk = this.earth.getCity('hong kong')
-    // let newyork = this.earth.getCity('new york')
-    // let beijing = this.earth.getCity('beijing')
-    // let sydney = this.earth.getCity('mumbai')
-    // let milan = this.earth.getCity('milan')
-    // let brazillia = this.earth.getCity('brazillia')
+
 
 
 
@@ -84,8 +154,6 @@ export default class Day extends BasicThreeWithCam {
         onWheel={this.mouseWheel}
         onMouseOut={this.mouseUp}
         onMouseMove={this.mouseMove}>
-        onMouseMove={this.mouseMove}>
-
       </div>
     )
   }

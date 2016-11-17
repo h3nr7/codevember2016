@@ -91,7 +91,7 @@ export default class Fbo {
 
   update() {
     this.renderer.render( this.scene, this.orthCam, this.rtt, true)
-    this.particles.material.uniforms.positions.value = this.rtt
+    this.particles.material.uniforms.positions.value = this.rtt.texture
   }
 
 }

@@ -6,7 +6,8 @@ export default class ParticleObj {
     this.options = Object.assign({
       numPoint: 24,
       color: 0x00FF00,
-      duration: 8
+      duration: 8,
+      closed: false
     }, opts)
 
     this.start = start || new THREE.Vector3()
@@ -20,6 +21,7 @@ export default class ParticleObj {
     this.geometry.vertices.push(this.end)
 
     this.curve = new THREE.CatmullRomCurve3([this.start, this.midpoint, this.end])
+    this.curve.closed = true
     this.curveGeometry = new THREE.Geometry()
     this.curveGeometry.vertices = this.curve.getPoints( this.options.numPoint )
 
