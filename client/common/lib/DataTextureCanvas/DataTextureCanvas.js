@@ -19,8 +19,8 @@ export default class DataTextureCanvas extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('something changed', nextProps)
-    return nextProps !== this.props
+
+    return (nextProps.speed0 !== this.props.speed0) || (nextProps.speed0 !== this.props.speed0)
   }
 
   componentWillMount() {
@@ -36,26 +36,38 @@ export default class DataTextureCanvas extends React.Component {
   }
 
   componentDidMount() {
+
     this.canvasDOM = ReactDOM.findDOMNode(this.canvas)
     this.ctx = this.canvasDOM.getContext('2d')
     this.texture = new THREE.Texture(this.canvasDOM)
     this.init()
   }
 
+  /**
+   * GET Canvas DOM
+   * @return {[type]} [description]
+   */
   getCanvasDom() {
     return this.canvasDOM
   }
 
+  /**
+   * GET Canvas Context
+   * @return {[type]} [description]
+   */
   getCtx() {
     return this.ctx
   }
 
+  /**
+   * GET Canvas as THREE texture
+   * @return {[type]} [description]
+   */
   getTexture() {
     return this.texture
   }
 
   init() {
-
     let { sqNum, width, height, inColors, outColors } = this.props
 
     for(let i = 0; i < (sqNum+1); i++) {
@@ -68,7 +80,6 @@ export default class DataTextureCanvas extends React.Component {
   }
 
   animate() {
-
     if(!this.ctx) return
 
     this.texture.needsUpdate = true
@@ -93,7 +104,6 @@ export default class DataTextureCanvas extends React.Component {
 
 
   render() {
-
     let { width, height } = this.props
 
     let canProps = {
@@ -127,6 +137,6 @@ DataTextureCanvas.defaultProps = {
   gui: null,
   speed0: 1,
   speed1: 1,
-  inColors: ['#99ff00', '#00ff00', 'rgba(0,0,0,0.1)', '#00ff66', 'rgba(0,0,0,0.1)', '#00ffcc'],
-  outColors: ['#ff3300', '#ff0099', 'rgba(0,0,0,0.1)', '#ff3300']
+  inColors: ['#008483', '#008483', 'rgba(0,0,0,0.1)', '#008483', 'rgba(0,0,0,0.1)', '#008483'],
+  outColors: ['#81020d', '#81020d', 'rgba(0,0,0,0.1)', '#81020d']
 }

@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
 import EarthObj from 'lib/EarthObj'
 import RibbonObj from 'lib/RibbonObj'
+import SignPostObj from 'lib/SignPostObj'
 import DataTextureCanvas from 'lib/DataTextureCanvas'
 
 
@@ -23,6 +24,8 @@ export default class Day extends BasicThreeWithCam {
      this.rotate = false
 
      this.ribbonGroup = []
+     this.canvasGroup = []
+     this.signGroup = []
 
   }
 
@@ -52,8 +55,9 @@ export default class Day extends BasicThreeWithCam {
     this.earth.load()
     super.init()
 
-    this.canvasDOM = this.canvas.getCanvasDom()
-    this.texture = this.canvas.getTexture()
+
+    this.texture = this.canvasGroup[0].getTexture()
+
 
     this.gui.add(this, 'stopFrame')
     this.gui.add(this, 'hideCanvas')
@@ -64,11 +68,14 @@ export default class Day extends BasicThreeWithCam {
   tick() {
     super.tick()
 
-    if(!this.stopFrame) {
-      this.canvas.animate()
-      this.canvas2.animate()
-    }
-    this.canvasDOM.style.display = this.hideCanvas ? 'none' : 'block'
+    this.canvasGroup.forEach(c => {
+      if(!c) return //Guard to stop error from referencing when component updates
+      let cDom = c.getCanvasDom()
+      cDom.style.display = this.hideCanvas ? 'none' : 'block'
+
+      if(!this.stopFrame) c.animate()
+    })
+
     this.earth.animate()
 
     this.raycaster.setFromCamera( this.mouseVector, this.camera )
@@ -82,16 +89,21 @@ export default class Day extends BasicThreeWithCam {
       this.earth.options.isRotating = this.rotate
     })
 
+    this.signGroup.forEach( s => {
+      s.mesh.lookAt( this.camera.position )
+      // s.mesh.rotation.setFromRotationMatrix( this.camera.matrix );
+    })
 
     this.currentIntersect = null
 
     intersects.forEach(v => {
       // if(v.object.name === 'globe' || v.object.name === 'atmosphere') return
-      console.log('lalalalala', v.object)
       this.earth.options.isRotating = false
       v.object.material.color = new THREE.Color(0x000000)
       this.currentIntersect = v.object.name
     })
+
+
   }
 
   mouseDown(evt) {
@@ -110,25 +122,59 @@ export default class Day extends BasicThreeWithCam {
     let middleeast = this.earth.addCity({ name:'middleeast', lat:24.063783, lng: 43.854548 })
     let america = this.earth.addCity({ name:'america', lat: 41.510495, lng: -115.040280 })
 
-    this.addRibbon(europe.position, asia.position, 40, this.texture)
-    this.addRibbon(europe.position, latin.position, 40, this.texture)
-    this.addRibbon(europe.position, middleeast.position, 40, this.texture)
-    this.addRibbon(europe.position, america.position, 40, this.texture)
+    let euroAsia = this.addRibbon(europe.position, asia.position, 40, this.texture)
+    let euroLatin = this.addRibbon(europe.position, latin.position, 40, this.texture)
+    let euroMiddleeast = this.addRibbon(europe.position, middleeast.position, 40, this.texture)
+    let euroAmerica = this.addRibbon(europe.position, america.position, 40, this.texture)
 
+
+    this.euroAsiaSign = this.addSign(euroAsia.apex)
+    this.euroLatinSign = this.addSign(euroLatin.apex)
+    this.euroMiddleeastSign = this.addSign(euroMiddleeast.apex)
+    this.euroAmericaSign = this.addSign(euroAmerica.apex)
+  }
+
+  addSign(pos, texture = undefined) {
+    let euroAsiaSign = new SignPostObj(undefined, undefined, {
+      texture: this.texture
+    })
+    let euroAsiaApex = pos
+    euroAsiaSign.mesh.position.x = euroAsiaApex.x
+    euroAsiaSign.mesh.position.y = euroAsiaApex.y
+    euroAsiaSign.mesh.position.z = euroAsiaApex.z
+
+    this.earth.group.add(euroAsiaSign.mesh)
+    this.signGroup.push(euroAsiaSign)
+
+    return euroAsiaSign
   }
 
   addRibbon(pos1, pos2, width = 20, texture) {
     let tmp = new RibbonObj(pos1, pos2, { width: width, texture:texture })
     this.earth.group.add(tmp.group)
     this.ribbonGroup.push(tmp.mesh)
+    return tmp
   }
 
-
+  renderTextureCanvas() {
+    this.canvasGroup = []
+    return(
+      <div>
+        <DataTextureCanvas
+          canWidth
+          canHeight
+          gui = { this.gui }
+          speed0 = {this.speed0 }
+          speed1 = {this.speed1 }
+          ref={ c => this.canvasGroup.push(c) } />
+      </div>
+    )
+  }
 
 
   render() {
     let { canWidth, canHeight, width, height } = this.state
-
+    console.log(this.canvasGroup)
     return(
       <div ref = { c => { this.container = c }}
         className="day__container"
@@ -137,13 +183,7 @@ export default class Day extends BasicThreeWithCam {
         onWheel={this.mouseWheel}
         onMouseOut={this.mouseUp}
         onMouseMove={this.mouseMove}>
-        <DataTextureCanvas
-          canWidth
-          canHeight
-          gui = { this.gui }
-          speed0 = {this.speed0 }
-          speed1 = {this.speed1 }
-          ref={ c => this.canvas = c } />
+        { this.renderTextureCanvas() }
       </div>
     )
   }

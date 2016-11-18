@@ -145,8 +145,8 @@ export default class Day extends BasicThreeWithCam {
     this.blocks2 = []
     this.blocksPos2 = []
 
-    let greenSet = ['#99ff00', '#00ff00', 'rgba(0,0,0,0.1)', '#00ff66', 'rgba(0,0,0,0.1)', '#00ffcc']
-    let redSet = ['#ff3300', '#ff0099', 'rgba(0,0,0,0.1)', '#ff3300']
+    let greenSet = ['#008483', '#008483', 'rgba(0,0,0,0.1)', '#008483', 'rgba(0,0,0,0.1)', '#008483']
+    let redSet = ['#81020d', '#81020d', 'rgba(0,0,0,0.1)', '#81020d']
 
     let { sqNum, canWidth, canHeight } = this.state
 
@@ -172,12 +172,12 @@ export default class Day extends BasicThreeWithCam {
       if(this.blocksPos[i] > canWidth) this.blocksPos[i] = -canWidth / sqNum
       this.blocksPos[i] += this.speed0
       this.ctx.fillStyle = this.blocks[i]
-      this.ctx.fillRect(this.blocksPos[i], canHeight/3, canWidth / sqNum ,canHeight* 2/3)
+      this.ctx.fillRect(this.blocksPos[i], canHeight/2, canWidth / sqNum ,canHeight/2)
 
       if(this.blocksPos2[i] < -canWidth / 9) this.blocksPos2[i] = canWidth * (sqNum+1)/sqNum
       this.blocksPos2[i] -= this.speed1
       this.ctx.fillStyle = this.blocks2[i]
-      this.ctx.fillRect(this.blocksPos2[i], 0, canWidth / sqNum ,canHeight/3)
+      this.ctx.fillRect(this.blocksPos2[i], 0, canWidth / sqNum ,canHeight/2)
     }
   }
 

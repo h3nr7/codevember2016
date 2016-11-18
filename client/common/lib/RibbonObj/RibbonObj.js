@@ -24,6 +24,8 @@ export default class RibbonObj {
 
     this.group = new THREE.Object3D()
 
+    // higest point
+    this.apex = this.midpoint2.clone()
 
     this.geometry = new THREE.Geometry()
     this.geometry.vertices.push(this.start)
