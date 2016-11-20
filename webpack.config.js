@@ -18,6 +18,7 @@ const config = {
 
   resolve: {
     modulesDirectories: [
+      'client',
       'node_modules'
     ],
     root: [
@@ -106,7 +107,7 @@ switch(process.env.NODE_ENV) {
     break
   case 'staging':
   case 'production':
-    config.devtool = 'eval'
+    config.devtool = false
     config.entry = {
       vendor: ['react', 'react-dom', 'react-router', 'react-redux', 'redux', 'react-router-redux', 'd3', 'three'],
       app: [
