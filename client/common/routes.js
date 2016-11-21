@@ -32,6 +32,8 @@ import Day30 from 'container/Day30'
 import HSBCDemo1 from 'container/HSBCDemo1'
 import HSBCDemo2 from 'container/HSBCDemo2'
 import HSBCDemo3 from 'container/HSBCDemo3'
+import HSBCDemo4 from 'container/HSBCDemo4'
+
 
 const outDayRoutes = () => {
 
@@ -85,7 +87,8 @@ const outDayRoutes = () => {
   let hsbcContainer = [
     HSBCDemo1,
     HSBCDemo2,
-    HSBCDemo3
+    HSBCDemo3,
+    HSBCDemo4
   ]
 
   let hsbcCounter = 0

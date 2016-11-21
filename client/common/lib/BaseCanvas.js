@@ -61,7 +61,7 @@ export default class BaseCanvas extends React.Component {
     this.texture.needsUpdate = true
     let { width, height } = this.props
 
-    this.ctx.clearRect(0, 0, width, height);
+    this.ctx.clearRect(0, 0, width, height)
 
   }
 

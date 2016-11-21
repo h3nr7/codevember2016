@@ -1,8 +1,13 @@
 import * as THREE from 'three'
+import EarthFbo from './EarthFbo'
+
 import earthVert from './shader/earth.vert'
 import earthFrag from './shader/earth.frag'
 import cloudVert from './shader/cloud.vert'
 import cloudFrag from './shader/cloud.frag'
+import toFlatVert from './shader/globeToFlat.vert'
+import toFlatFrag from './shader/globeToFlat.frag'
+
 
 const PI = Math.PI
 const DEFAULT_TEXTURES = {
@@ -25,7 +30,9 @@ export default class EarthObj {
       groundTexture: DEFAULT_TEXTURES.groundTexture,
       atmosphereTexture: DEFAULT_TEXTURES.atmosphereTexture,
       onLoadComplete: undefined,
-      initialRotation: new THREE.Vector3()
+      initialRotation: new THREE.Vector3(),
+      targetWidth: 600.0,
+      targetHeight: 400.0
     }, opts)
 
     this.isLoaded = false
@@ -39,8 +46,8 @@ export default class EarthObj {
 
     this.earthUniform = {
       texture: { type: 't', value: null },
-      targetWidth: { type: 'f', value: 600.0 },
-      targetHeight: { type: 'f', value: 400.0 },
+      targetWidth: { type: 'f', value: this.options.targetWidth },
+      targetHeight: { type: 'f', value: this.options.targetHeight },
       mixAmount: 	 { type: 'f', value: 0.0 }
     }
 
@@ -90,6 +97,12 @@ export default class EarthObj {
     return new THREE.Vector3(x, y, z)
   }
 
+  /**
+   * ADD CITY
+   * @param {[type]} {   name =         'london'      [description]
+   * @param {[type]} lat =    51.509865 [description]
+   * @param {[type]} lng =    -0.118092 }             =             {} [description]
+   */
   addCity({ name = 'london', lat = 51.509865, lng = -0.118092 } = {}) {
 
     let pos = this.getVectorByLatLng(lat, lng)
@@ -118,6 +131,11 @@ export default class EarthObj {
     return city
   }
 
+  /**
+   * GET CITY
+   * @param  {[type]} name [description]
+   * @return {[type]}      [description]
+   */
   getCity(name) {
     return this.cities[name]
   }

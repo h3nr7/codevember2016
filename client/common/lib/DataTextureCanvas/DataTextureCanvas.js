@@ -93,12 +93,12 @@ export default class DataTextureCanvas extends React.Component {
       if(this.blocksPos[i] > width) this.blocksPos[i] = -width / sqNum
       this.blocksPos[i] += this.speed0
       this.ctx.fillStyle = this.blocks[i]
-      this.ctx.fillRect(this.blocksPos[i], height/3, width / sqNum ,height* 2/3)
+      this.ctx.fillRect(this.blocksPos[i], height/2, width / sqNum ,height/2)
 
       if(this.blocksPos2[i] < -width / 9) this.blocksPos2[i] = width * (sqNum+1)/sqNum
       this.blocksPos2[i] -= this.speed1
       this.ctx.fillStyle = this.blocks2[i]
-      this.ctx.fillRect(this.blocksPos2[i], 0, width / sqNum ,height/3)
+      this.ctx.fillRect(this.blocksPos2[i], 0, width / sqNum ,height/2)
     }
   }
 
