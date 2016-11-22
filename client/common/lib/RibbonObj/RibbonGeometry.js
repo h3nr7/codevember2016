@@ -62,10 +62,10 @@ export default class RibbonGeometry {
     }
 
     this.geometry.computeFaceNormals()
+    this.geometry.computeBoundingBox()
   }
 
   buildUv() {
-    this.geometry.computeBoundingBox()
 
     let max = this.geometry.boundingBox.max,
         min = this.geometry.boundingBox.min

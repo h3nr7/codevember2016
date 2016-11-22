@@ -97,6 +97,18 @@ export default class EarthObj {
     return new THREE.Vector3(x, y, z)
   }
 
+  getFlatByLatLng(lat, lng) {
+
+    let { targetWidth, targetHeight, cityFloatDistance } = this.options
+    let xScale = targetWidth * 4/3
+    let yScale = targetHeight * 3/4
+
+    let x = xScale * (180 + lat) / 360 - xScale/2
+    let y = yScale * (90 - lng) / 180 - yScale/2
+
+    return new THREE.Vector3(cityFloatDistance, x, y)
+  }
+
   /**
    * ADD CITY
    * @param {[type]} {   name =         'london'      [description]
@@ -106,6 +118,7 @@ export default class EarthObj {
   addCity({ name = 'london', lat = 51.509865, lng = -0.118092 } = {}) {
 
     let pos = this.getVectorByLatLng(lat, lng)
+    let flatPos = this.getFlatByLatLng(lat, lng)
     let material = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       shininess: 0,
@@ -115,6 +128,7 @@ export default class EarthObj {
     let geom = new THREE.SphereGeometry(this.options.citySize, 4, 4)
     let city = {
       position: pos,
+      flatPosition: flatPos,
       material,
       mesh: new THREE.Mesh(geom, material)
     }
@@ -154,6 +168,7 @@ export default class EarthObj {
       uniforms: this.earthUniform,
       vertexShader: earthVert,
       fragmentShader: earthFrag,
+      // wireframe: true,
       visible: this.options.visible
     })
 
@@ -241,8 +256,18 @@ export default class EarthObj {
     }
 
     if(this.atmosphereMesh) {
+      let { mixAmount } = this.earthUniform
 
-      if(this.earthUniform.mixAmount.value !== 0) {
+      if(mixAmount.value !== 0) {
+
+        Object.keys(this.cities).forEach(key => {
+          let { mesh, position, flatPosition } = this.cities[key]
+
+          mesh.position.x = THREE.Math.lerp(position.x, flatPosition.x, mixAmount.value)
+          mesh.position.y = THREE.Math.lerp(position.y, flatPosition.y, mixAmount.value)
+          mesh.position.z = THREE.Math.lerp(position.z, flatPosition.z, mixAmount.value)
+        })
+
 
         if(this.t >= 0) {
           this.atmosphereMesh.rotation.x = THREE.Math.lerp(0, this.rotationSnap.x, this.t/10)

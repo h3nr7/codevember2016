@@ -1,5 +1,8 @@
 import * as THREE from 'three'
 import RibbonGeometry from './RibbonGeometry'
+
+const PI = Math.PI
+
 export default class RibbonObj {
 
   constructor(start, end, opts = {}) {
@@ -7,12 +10,11 @@ export default class RibbonObj {
     this.options = Object.assign({
       // Normalised
       name: undefined,
-      offsetPosition: new THREE.Vector3(0, 0, 0),
-      offsetAmount: 5,
       color: 0x0000FF,
       numPoint: 50,
       width: 15,
-      texture: undefined
+      texture: undefined,
+      isPerpendicular: false
     }, opts)
 
     // Setup start, end and mid point
@@ -33,6 +35,7 @@ export default class RibbonObj {
     this.geometry.vertices.push(this.end)
 
     this.curve = new THREE.CatmullRomCurve3([this.start, this.midpoint, this.midpoint2, this.midpoint3, this.end])
+
     this.curveGeometry = new THREE.Geometry()
     this.curveGeometry.vertices = this.curve.getPoints( this.options.numPoint )
 
@@ -60,6 +63,7 @@ export default class RibbonObj {
       width: this.options.width
     })
 
+
     let material = new THREE.MeshPhongMaterial({
       map: this.options.texture,
       shininess: 0,
@@ -70,8 +74,29 @@ export default class RibbonObj {
     material.side = THREE.DoubleSide
     this.mesh = new THREE.Mesh(ribbonGeo, material)
     if(this.options.name) this.mesh.name = this.options.name
-
     this.group.add(this.mesh)
+
+    if(this.options.isPerpendicular) {
+      let centerPoint = this.getCenterPoint()
+      let axis = this.start.clone().sub(this.end).normalize()
+      this.mesh.rotateOnAxis(axis, -PI/2)
+      this.mesh.geometry.center()
+      this.mesh.position.x = centerPoint.x + 6
+      this.mesh.position.y = centerPoint.y - 8
+      this.mesh.position.z = centerPoint.z
+    }
+  }
+
+  getCenterPoint() {
+    let middle = new THREE.Vector3()
+    this.mesh.geometry.computeBoundingBox()
+
+    middle.x = (this.mesh.geometry.boundingBox.max.x + this.mesh.geometry.boundingBox.min.x) / 2;
+    middle.y = (this.mesh.geometry.boundingBox.max.y + this.mesh.geometry.boundingBox.min.y) / 2;
+    middle.z = (this.mesh.geometry.boundingBox.max.z + this.mesh.geometry.boundingBox.min.z) / 2;
+
+    this.mesh.localToWorld( middle )
+    return middle
   }
 
   /**
@@ -83,10 +108,10 @@ export default class RibbonObj {
    * @return {[type]}                  [description]
    */
   _getMidPoint(v0, v1, fraction = 0.5, verticalFraction = 0.35) {
-    let { offsetPosition, offsetAmount } = this.options
 
     let dir = v1.clone().sub(v0)
     let len = dir.length()
+
     dir = dir.normalize().multiplyScalar( len * fraction )
     dir = v0.clone().add(dir)
 

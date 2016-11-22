@@ -139,6 +139,10 @@ export default class Day extends BasicThreeWithCam {
     let euroMiddleeast = this.addRibbon(europe.position, middleeast.position, 40, this.texture)
     let euroAmerica = this.addRibbon(europe.position, america.position, 40, this.texture)
 
+    let euroAsiaFlat = this.addRibbon(europe.flatPosition, asia.flatPosition, 40, this.texture, true)
+    let euroLatinFlat = this.addRibbon(europe.flatPosition, latin.flatPosition, 40, this.texture, true)
+    let euroMiddleeastFlat = this.addRibbon(europe.flatPosition, middleeast.flatPosition, 40, this.texture, true)
+    let euroAmericaFlat = this.addRibbon(europe.flatPosition, america.flatPosition, 40, this.texture, true)
 
     this.euroAsiaSign = this.addSign(euroAsia.apex)
     this.euroLatinSign = this.addSign(euroLatin.apex)
@@ -163,8 +167,8 @@ export default class Day extends BasicThreeWithCam {
     return euroAsiaSign
   }
 
-  addRibbon(pos1, pos2, width = 20, texture) {
-    let tmp = new RibbonObj(pos1, pos2, { width: width, texture:texture })
+  addRibbon(pos1, pos2, width = 20, texture, isPerpendicular) {
+    let tmp = new RibbonObj(pos1, pos2, { width, texture, isPerpendicular })
     this.earth.group.add(tmp.group)
     this.ribbonGroup.push(tmp.mesh)
     return tmp
