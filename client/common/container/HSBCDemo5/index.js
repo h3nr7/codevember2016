@@ -67,11 +67,16 @@ export default class Day extends BasicThreeWithCam {
     this.gui.add(this, 'hideCanvas')
     this.gui.add(this, 'rotate')
 
-    let gridHelper = new THREE.GridHelper( 300, 10 )
-    this.scene.add( gridHelper )
+    this.gridHelper = new THREE.GridHelper( 300, 10 )
+    this.gridHelper.visible = false
+    this.scene.add( this.gridHelper )
 
-    let axisHelper = new THREE.AxisHelper( 300 )
-    this.scene.add( axisHelper )
+    this.axisHelper = new THREE.AxisHelper( 300 )
+    this.axisHelper.visible = false
+    this.scene.add( this.axisHelper )
+
+    this.gui.add(this.gridHelper, 'visible')
+    this.gui.add(this.axisHelper, 'visible')
 
   }
 
@@ -155,6 +160,9 @@ export default class Day extends BasicThreeWithCam {
     this.euroMiddleeastSign = this.addSign(euroMiddleeast.apex)
     this.euroAmericaSign = this.addSign(euroAmerica.apex)
 
+
+    this.gui.add(this.earth.earthMesh.material, 'wireframe')
+    this.gui.add(this.axisHelper, 'visible')
     this.gui.add(this.earth.earthUniform.mixAmount, 'value', 0, 1)
   }
 
