@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import * as THREE from 'three'
 import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
 import EarthObj from 'lib/EarthObj'
-import RibbonObj from 'lib/RibbonObj'
+import { RibbonObj, FlatRibbonObj } from 'lib/RibbonObj'
 import SignPostObj from 'lib/SignPostObj'
 import DataTextureCanvas from 'lib/DataTextureCanvas'
 import SignTextureCanvas from 'lib/SignTextureCanvas'
@@ -66,6 +66,12 @@ export default class Day extends BasicThreeWithCam {
     this.gui.add(this, 'stopFrame')
     this.gui.add(this, 'hideCanvas')
     this.gui.add(this, 'rotate')
+
+    let gridHelper = new THREE.GridHelper( 300, 10 )
+    this.scene.add( gridHelper )
+
+    let axisHelper = new THREE.AxisHelper( 300 )
+    this.scene.add( axisHelper )
 
   }
 
@@ -140,9 +146,9 @@ export default class Day extends BasicThreeWithCam {
     let euroAmerica = this.addRibbon(europe.position, america.position, 40, this.texture)
 
     let euroAsiaFlat = this.addRibbon(europe.flatPosition, asia.flatPosition, 40, this.texture, true)
-    let euroLatinFlat = this.addRibbon(europe.flatPosition, latin.flatPosition, 40, this.texture, true)
-    let euroMiddleeastFlat = this.addRibbon(europe.flatPosition, middleeast.flatPosition, 40, this.texture, true)
-    let euroAmericaFlat = this.addRibbon(europe.flatPosition, america.flatPosition, 40, this.texture, true)
+    let euroLatinFlat = this.addRibbon(europe.flatPosition, latin.flatPosition, 50, this.texture, true)
+    let euroMiddleeastFlat = this.addRibbon(europe.flatPosition, middleeast.flatPosition, 30, this.texture, true)
+    let euroAmericaFlat = this.addRibbon(europe.flatPosition, america.flatPosition, 50, this.texture, true)
 
     this.euroAsiaSign = this.addSign(euroAsia.apex)
     this.euroLatinSign = this.addSign(euroLatin.apex)

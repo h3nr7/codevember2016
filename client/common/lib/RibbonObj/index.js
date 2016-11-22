@@ -1,3 +1,8 @@
 import RibbonObj from './RibbonObj'
+import FlatRibbonObj from './FlatRibbonObj'
 
-export default RibbonObj
+
+export {
+  RibbonObj,
+  FlatRibbonObj
+}

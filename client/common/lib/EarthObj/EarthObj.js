@@ -278,6 +278,7 @@ export default class EarthObj {
       } else {
         this.atmosphereMesh.rotation.y += 0.0002
         this.atmosphereMesh.rotation.x += 0.0002
+
         this.rotationSnap = new THREE.Vector2(this.atmosphereMesh.rotation.x, this.atmosphereMesh.rotation.y)
         this.t = 10
       }

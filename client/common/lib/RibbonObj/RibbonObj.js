@@ -14,15 +14,25 @@ export default class RibbonObj {
       numPoint: 50,
       width: 15,
       texture: undefined,
+      verticalDistance: 10,
       isPerpendicular: false
     }, opts)
 
     // Setup start, end and mid point
     this.start = start || new THREE.Vector3()
     this.end = end || new THREE.Vector3(400, 400, 400)
-    this.midpoint = this._getMidPoint(this.start, this.end, 0.3, 0.2)
-    this.midpoint2 = this._getMidPoint(this.start, this.end, 0.5, 0.25)
-    this.midpoint3 = this._getMidPoint(this.start, this.end, 0.7, 0.2)
+
+    if(!this.options.isPerpendicular) {
+      this.midpoint = this._getMidPoint(this.start, this.end, 0.3, 0.2)
+      this.midpoint2 = this._getMidPoint(this.start, this.end, 0.5, 0.25)
+      this.midpoint3 = this._getMidPoint(this.start, this.end, 0.7, 0.2)
+    } else {
+      this.midpoint = this._getFlatMidPoint(this.start, this.end, 0.2, 1)
+      this.midpoint2 = this._getFlatMidPoint(this.start, this.end, 0.5, 2)
+      this.midpoint3 = this._getFlatMidPoint(this.start, this.end, 0.8, 1)
+
+      console.log(this.midpoint, this.midpoint2, this.midpoint3)
+    }
 
     this.group = new THREE.Object3D()
 
@@ -56,8 +66,12 @@ export default class RibbonObj {
 
   drawRibbon() {
 
+    let refCurve
+    if(this.options.isPerpendicular) refCurve = new THREE.CatmullRomCurve3([this.start, this.end])
+
     let ribbonGeo = new RibbonGeometry({
       curve: this.curve,
+      referenceCurve: refCurve,
       isVariableWidth: true,
       numSegments: 256,
       width: this.options.width
@@ -76,15 +90,23 @@ export default class RibbonObj {
     if(this.options.name) this.mesh.name = this.options.name
     this.group.add(this.mesh)
 
-    if(this.options.isPerpendicular) {
-      let centerPoint = this.getCenterPoint()
-      let axis = this.start.clone().sub(this.end).normalize()
-      this.mesh.rotateOnAxis(axis, -PI/2)
-      this.mesh.geometry.center()
-      this.mesh.position.x = centerPoint.x + 6
-      this.mesh.position.y = centerPoint.y - 8
-      this.mesh.position.z = centerPoint.z
-    }
+    // if(this.options.isPerpendicular) {
+    //   let centerPoint = this.getCenterPoint()
+    //   let axis = this.start.clone().sub(this.end).normalize()
+    //
+    //   let zDiff = this.end.z - this.start.z
+    //
+    //   console.log(zDiff)
+    //
+    //   let rotRad = -PI/2
+    //   if(zDiff > 0) rotRad *= -1
+    //
+    //   this.mesh.rotateOnAxis(axis, rotRad)
+    //   this.mesh.geometry.center()
+    //   this.mesh.position.x = centerPoint.x
+    //   this.mesh.position.y = centerPoint.y
+    //   this.mesh.position.z = centerPoint.z
+    // }
   }
 
   getCenterPoint() {
@@ -116,6 +138,22 @@ export default class RibbonObj {
     dir = v0.clone().add(dir)
 
     return dir.clone().add(dir.normalize().multiplyScalar(len * verticalFraction))
+  }
+
+  /**
+   * get flat midpoint
+   * @param  {[type]} v0               [description]
+   * @param  {[type]} v1               [description]
+   * @param  {[type]} fraction         =             0.5  [description]
+   * @param  {[type]} verticalFraction =             0.35 [description]
+   * @return {[type]}                  [description]
+   */
+  _getFlatMidPoint(v0, v1, fraction = 0.5, verticalFraction = 0.35) {
+    let dir = v1.clone().sub(v0)
+    let pos = v0.clone().lerp(v1, fraction)
+    pos.x += this.options.verticalDistance * (1 - Math.abs(fraction - 0.5)) * verticalFraction
+
+    return pos
   }
 
 
