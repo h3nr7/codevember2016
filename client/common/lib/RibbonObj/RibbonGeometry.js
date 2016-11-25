@@ -8,7 +8,7 @@ export default class RibbonGeometry {
     referenceCurve,
     numSegments = 8,
     width = 10,
-    isVariableWidth = false,
+    isVariableWidth = true,
     closed = false } = {}) {
 
     this.numSegments = numSegments
