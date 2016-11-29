@@ -36,7 +36,6 @@ export default class Day extends BasicThreeWithCam {
     // let refCurve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(20, 20, 0), new THREE.Vector3(60, 60, 60), new THREE.Vector3(120, 120, 120))
 
     let cylinder = this.initCylinder()
-    console.log('lala', cylinder.combinedNormals, cylinder.vertices)
 
     let curve = new THREE.CatmullRomCurve3(cylinder.vertices)
     let refCurve = new THREE.CatmullRomCurve3(cylinder.combinedNormals)
@@ -120,7 +119,6 @@ export default class Day extends BasicThreeWithCam {
 
     this.scene.add(this.cylinderMesh)
 
-    console.log(geo)
 
     return { normals, combinedNormals, vertices }
   }

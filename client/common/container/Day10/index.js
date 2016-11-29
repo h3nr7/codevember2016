@@ -27,11 +27,10 @@ export default class Day extends BasicThreeWithCam {
   earthLoadComplete(dat) {
     this.scene.add(dat.group)
 
-    console.log(this.earth.earthUniform, this.gui)
-
+    this.earth.earthUniform.mixAmount.value = 1.0
+    this.earth.group.rotateY(Math.PI)
     this.gui.add(this.earth.earthUniform.mixAmount, 'value', 0, 1)
-
-    console.log(this.earth.getVectorByLatLng(51.509865, -0.118092))
+    this.gui.open()
   }
 
 

@@ -1,97 +1,169 @@
-import * as THREE from 'three'
+  import * as THREE from 'three'
+  import RenderFs from './shader/render_fs.glsl'
+  import RenderVs from './shader/render_vs.glsl'
+  import SimulationFs from './shader/simulation_fs.glsl'
+  import SimulationVs from './shader/simulation_vs.glsl'
 
-export default class Fbo {
+  export default class Fbo {
 
-  constructor( width, height, renderer, simulationMaterial, renderMaterial, opts) {
+    constructor( renderer, positions, opts = {} ) {
 
-    this.renderer = renderer
-    this.renderMaterial = renderMaterial
-    this.particles = null
-    this.gl = renderer.getContext()
-    this.simulationMaterial = simulationMaterial
-    this.renderMaterial = renderMaterial
-    this.width = width
-    this.height = height
-    this.options = Object.assign({
-      density: 1
-    }, opts)
+      this.renderer = renderer
+      this.positions = positions
+      this.gl = renderer.getContext()
 
-    //1 we need FLOAT Textures to store positions
-    //https://github.com/KhronosGroup/WebGL/blob/master/sdk/tests/conformance/extensions/oes-texture-float.html
-    if (!this.gl.getExtension("OES_texture_float")){
-        throw new Error( "float textures not supported" );
+      if (!this.gl.getExtension("OES_texture_float")){
+          throw new Error( "float textures not supported" );
+      }
+
+      if( this.gl.getParameter(this.gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS) == 0 ) {
+          throw new Error( "vertex shader cannot read textures" );
+      }
+
+      this.opts = Object.assign({
+        width: 256,
+        height: 256,
+        density: 1
+      }, opts)
+
+      this.startTime = this.timer = new Date()
+
+      this.initRenderTarget()
+
+      this.initVertice()
+
+      this.initParticle()
+      this.initSimulation()
+
+      this.initScene()
+
     }
 
-    //2 we need to access textures from within the vertex shader
-    //https://github.com/KhronosGroup/WebGL/blob/90ceaac0c4546b1aad634a6a5c4d2dfae9f4d124/conformance-suites/1.0.0/extra/webgl-info.html
-    if( this.gl.getParameter(this.gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS) == 0 ) {
-        throw new Error( "vertex shader cannot read textures" );
+    /**
+     * INIT
+     * @return {[type]} [description]
+     */
+    initRenderTarget() {
+
+      let { width, height, density } = this.opts
+
+      let options = {
+          minFilter: THREE.NearestFilter,//important as we want to sample square pixels
+          magFilter: THREE.NearestFilter,//
+          format: THREE.RGBFormat,//could be RGBAFormat
+          type:THREE.FloatType//important as we need precise coordinates (not ints)
+      }
+
+      // WebGLRenderTarget:-
+      // A render target is a buffer where the video card draws pixels
+      // for a scene that is being rendered in the background. It is used in different effects.
+      this.rtt = new THREE.WebGLRenderTarget( width, height, options )
     }
 
-    this.scene = new THREE.Scene()
-    this.orthCam = new THREE.OrthographicCamera(-1,1,1,-1,1/Math.pow( 2, 53 ),1 )
 
-    //4 create a target texture
-    let options = {
-        minFilter: THREE.NearestFilter,//important as we want to sample square pixels
-        magFilter: THREE.NearestFilter,//
-        format: THREE.RGBFormat,//could be RGBAFormat
-        type:THREE.FloatType//important as we need precise coordinates (not ints)
-    };
+    /**
+     * init vertices
+     * @return {[type]} [description]
+     */
+    initVertice() {
+      let { width, height, density } = this.opts
 
-    this.rtt = new THREE.WebGLRenderTarget( width, height, options );
+      this.positionTexture = new THREE.DataTexture( this.positions, width, height, THREE.RGBFormat, THREE.FloatType )
+      this.positionTexture.needsUpdate = true
+    }
 
-    this.initSimulation()
-    this.initGeom()
+    /**
+     * INIT Particles Material and Geometry
+     * @return {[type]} [description]
+     */
+    initParticle() {
+      // Particle Material
+      let partMaterial = new THREE.ShaderMaterial( {
+          uniforms: {
+              positions: { type: "t", value: null },
+              pointSize: { type: "f", value: 2 }
+          },
+          vertexShader: RenderVs,
+          fragmentShader: RenderFs,
+          transparent: true,
+          blending:THREE.AdditiveBlending
+      })
 
-  }
+      let { width, height, density } = this.opts
+      let l = Math.ceil( width * height * density )
+      // Simulation Vertices
+      let vertices = new Float32Array( l * 3 )
+      for ( var i = 0; i < l; i++ ) {
+          var i3 = i * 3;
+          vertices[ i3 ] = ( i % width ) / width
+          vertices[ i3 + 1 ] = ( i / width ) / height
+      }
 
-  initSimulation() {
-    //5 the simulation:
-    //create a bi-unit quadrilateral and uses the simulation material to update the Float Texture
-    let geom = new THREE.BufferGeometry()
-    geom.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array([
+      // Particle Geometry
+      let partGeom = new THREE.BufferGeometry();
+      partGeom.addAttribute( 'position',  new THREE.BufferAttribute( vertices, 3 ) )
+
+      this.particles = new THREE.Points( partGeom, partMaterial )
+    }
+
+    /**
+     * INIT Simulation Material and Geometry
+     * @param  {[type]} vertices [description]
+     * @return {[type]}          [description]
+     */
+    initSimulation() {
+      // Material
+      let simMaterial = new THREE.ShaderMaterial({
+          uniforms: {
+              positions: { type: "t", value: this.positionTexture },
+              timer: { type: "f", value: 0.0 }
+          },
+          vertexShader: SimulationVs,
+          fragmentShader:  SimulationFs
+        })
+      // Geometry
+      let simGeom = new THREE.BufferGeometry()
+      simGeom.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array([
         -1, -1, 0,
          1, -1, 0,
          1,  1, 0,
         -1, -1, 0,
          1,  1, 0,
         -1,  1, 0  ]), 3 ) )
-    geom.addAttribute( 'uv', new THREE.BufferAttribute( new Float32Array([
+
+      simGeom.addAttribute( 'uv', new THREE.BufferAttribute( new Float32Array([
          0, 1, 1,
          1, 1, 0,
          0, 1, 1,
          0, 0, 0  ]), 2 ) )
 
-    this.scene.add( new THREE.Mesh( geom, this.simulationMaterial ) )
-  }
-
-  initGeom() {
-
-    let { width, height } = this
-
-    //6 the particles:
-    //create a vertex buffer of size width * height with normalized coordinates
-    let l = Math.ceil ( width * height * this.options.density )
-    let vertices = new Float32Array( l * 3 )
-    for ( var i = 0; i < l; i++ ) {
-
-        var i3 = i * 3;
-        vertices[ i3 ] = ( i % width ) / width
-        vertices[ i3 + 1 ] = ( i / width ) / height
+      this.simulation = new THREE.Mesh( simGeom, simMaterial )
     }
 
-    //create the particles geometry
-    var geometry = new THREE.BufferGeometry();
-    geometry.addAttribute( 'position',  new THREE.BufferAttribute( vertices, 3 ) )
+    /**
+     * INIT Scene
+     * @return {[type]} [description]
+     */
+    initScene() {
+      this.scene = new THREE.Scene()
+      this.orthCam = new THREE.OrthographicCamera( -1 ,1, 1, -1, 1/Math.pow( 2, 53 ), 1 )
+      this.scene.add( this.simulation )
+    }
 
-    this.particles = new THREE.Points( geometry, this.renderMaterial )
+
+    tick() {
+      this.timer = new Date() - this.startTime
+      // this.particles.material.uniforms.position.value = thi
+      this.simulation.material.uniforms.timer.value = this.timer
+      this.particles.material.uniforms.positions.value = this.rtt.texture
+    }
+
+    update() {
+      // -----------------------------------------------------------------
+      // WebGLRenderer.render ( scene, camera, renderTarget, forceClear )
+      // -----------------------------------------------------------------
+      this.renderer.render( this.scene, this.orthCam, this.rtt, true )
+      this.tick()
+    }
+
   }
-
-
-  update() {
-    this.renderer.render( this.scene, this.orthCam, this.rtt, true)
-    this.particles.material.uniforms.positions.value = this.rtt
-  }
-
-}

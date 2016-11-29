@@ -31,7 +31,9 @@ export default class Day extends BasicThreeWithCam {
     super.componentWillMount()
 
     this.earth = new EarthObj({
-      isRotating: false,
+      earthSize: 300,
+      citySize: 1,
+      isRotating: true,
       visible: false,
       onLoadComplete: this._earthLoaded.bind(this)
     })
@@ -93,7 +95,9 @@ export default class Day extends BasicThreeWithCam {
           amplitude: { type: "f", value: 192 },
           maxDistance: { type: "f", value: 96 },
           timer: { type: "f", value: 0.0},
-          attractorPos: { type: "v3", value: new THREE.Vector3(0,0,0) }
+          attractorPos: { type: "v3", value: new THREE.Vector3(0,0,0) },
+          attractorPos2: { type: "v3", value: new THREE.Vector3(0,0,0) },
+          attractorPos3: { type: "v3", value: new THREE.Vector3(0,0,0) }
       },
       vertexShader: SimulationVs,
       fragmentShader:  SimulationFs
@@ -120,10 +124,16 @@ export default class Day extends BasicThreeWithCam {
     super.tick()
 
     if(this.par) this.par.animate()
+    if(this.par2) this.par2.animate()
+    if(this.par3) this.par3.animate()
     this.earth.animate()
 
-    this.simulationShader.uniforms.timer.value += 0.01
+    this.simulationShader.uniforms.timer.value += 0.0001
+    this.simulationShader.uniforms.amplitude.value = 192 - 96 * Math.sin(this.simulationShader.uniforms.timer.value)
+    this.simulationShader.uniforms.frequency.value = 17 - 8.0 * (0.5 + 0.5 * Math.cos(this.simulationShader.uniforms.timer.value))
     if(this.par) this.simulationShader.uniforms.attractorPos.value = this.par.attractorMesh.position
+    if(this.par2) this.simulationShader.uniforms.attractorPos2.value = this.par2.attractorMesh.position
+    if(this.par3) this.simulationShader.uniforms.attractorPos3.value = this.par3.attractorMesh.position
     this.fbo.update()
   }
 
@@ -132,15 +142,25 @@ export default class Day extends BasicThreeWithCam {
 
     this.earth.addCity()
     this.earth.addCity({ name: 'hong kong', lat:	22.286394, lng: 114.149139})
+    this.earth.addCity({ name: 'hong kong', lat:	22.286394, lng: 114.149139})
+    this.earth.addCity({ name: 'somewhere', lat: 	33.865143, lng:	151.209900})
+    this.earth.addCity({ name: 'elsewhere', lat: 40.792240, lng:	-73.138260})
 
     let london = this.earth.getCity('london')
     let hk = this.earth.getCity('hong kong')
+    let somewhere = this.earth.getCity('somewhere')
+    let elsewhere = this.earth.getCity('elsewhere')
 
 
 
+    this.par = new ParticleObj(london.position, hk.position, { duration: 4.0 })
+    this.par2 = new ParticleObj(somewhere.position, elsewhere.position, { duration: 16 })
+    this.par3 = new ParticleObj(somewhere.position, london.position, { duration: 32 })
 
-    this.par = new ParticleObj(london.position, hk.position)
-    this.earth.group.add(this.par.group)
+    // this.earth.group.add(this.par.group)
+    // this.earth.group.add(this.par2.group)
+    // this.earth.group.add(this.par3.group)
+
   }
 
 

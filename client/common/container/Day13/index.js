@@ -1,77 +1,62 @@
 import React, { Component } from 'react'
 import * as THREE from 'three'
-import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
 import Fbo from './Fbo'
-import RenderFs from './shader/render_fs.glsl'
-import RenderVs from './shader/render_vs.glsl'
-import SimulationFs from './shader/simulation_fs.glsl'
-import SimulationVs from './shader/simulation_vs.glsl'
+import BasicThreeWithCam from 'container/Day0/BasicThreeWithCam'
 
 
 export default class Day extends BasicThreeWithCam {
 
   constructor() {
     super()
-  }
-
-  componentWillMount() {
-    super.componentWillMount()
 
     this.fboSettings = {
       width: 256,
-      height: 256
+      height: 256,
+      density: 1
     }
-
-    this.randomData = (( width, height, size ) => {
-      let len = width * height * 3
-      let data = new Float32Array( len )
-      while( len-- )data[len] = ( Math.random() -.5 ) * size
-      return data
-    })(this.fboSettings.width, this.fboSettings.height, 256)
 
   }
 
-  componentDidMount() {
-    super.componentDidMount()
+  getPoint(v,size) {
+    //the 'discard' method, not the most efficient
+    v.x = Math.random() * 2 - 1 ;
+    v.y = Math.random() * 2 - 1 ;
+    v.z = Math.random() * 2 - 1 ;
+    if(v.length()>1) return this.getPoint(v,size);
+    return v.normalize().multiplyScalar(size);
+  }
+
+  getSphere( count, size ){
+
+      var len = count * 3;
+      var data = new Float32Array( len );
+      var p = new THREE.Vector3();
+      for( var i = 0; i < len; i+=3 )
+      {
+          this.getPoint( p, size );
+          data[ i     ] = p.x;
+          data[ i + 1 ] = p.y;
+          data[ i + 2 ] = p.z;
+      }
+      return data;
   }
 
   init() {
     super.init()
 
-    let { width, height } = this.fboSettings
-    let positions = new THREE.DataTexture( this.randomData, width, height, THREE.RGBFormat, THREE.FloatType );
-    positions.needsUpdate = true;
+    let { width, height, density } = this.fboSettings
+    let l = Math.ceil ( width * height * density )
 
-    let simulationShader = new THREE.ShaderMaterial({
-      uniforms: {
-          positions: { type: "t", value: positions }
-      },
-      vertexShader: SimulationVs,
-      fragmentShader:  SimulationFs
-    })
+    this.randomData = this.getSphere(l, 256)
 
-    let renderShader = new THREE.ShaderMaterial( {
-        uniforms: {
-            positions: { type: "t", value: null },
-            pointSize: { type: "f", value: 2 }
-        },
-        vertexShader: RenderVs,
-        fragmentShader: RenderFs,
-        transparent: true,
-        blending:THREE.AdditiveBlending
-    } );
-
-    this.fbo = new Fbo(width, height, this.renderer, simulationShader, renderShader)
+    this.fbo = new Fbo( this.renderer, this.randomData )
     this.scene.add( this.fbo.particles )
 
   }
 
   tick() {
     super.tick()
-
     this.fbo.update()
-    this.fbo.particles.rotation.x += Math.PI / 180 * .5
-    this.fbo.particles.rotation.y -= Math.PI / 180 * .5
   }
 
 
