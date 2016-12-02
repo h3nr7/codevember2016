@@ -8,6 +8,7 @@ import SignPostObj from 'lib/SignPostObj'
 import DataTextureCanvas from 'lib/DataTextureCanvas'
 import SignTextureCanvas from 'lib/SignTextureCanvas'
 
+import './HSBCDemo5.scss'
 
 export default class Day extends BasicThreeWithCam {
 
@@ -25,6 +26,7 @@ export default class Day extends BasicThreeWithCam {
      this.rotate = false
 
      this.ribbonGroup = []
+     this.flatRibbonGroup = []
      this.canvasGroup = []
      this.signGroup = []
      this.signCanvasGroup = []
@@ -45,7 +47,8 @@ export default class Day extends BasicThreeWithCam {
     this.setState({
       canWidth: 256,
       canHeight: 256,
-      sqNum: 32
+      sqNum: 32,
+      mapView: false
     })
 
     this.raycaster = new THREE.Raycaster()
@@ -108,7 +111,14 @@ export default class Day extends BasicThreeWithCam {
 
     this.ribbonGroup.forEach(v => {
       v.material.color = new THREE.Color()
-      this.earth.options.isRotating = this.rotate
+      if( this.earth.isNotRound ) v.material.visible = false
+      else v.material.visible = true
+    })
+
+    this.flatRibbonGroup.forEach(v => {
+      v.material.color = new THREE.Color()
+      if( this.earth.isFlat ) v.material.visible = true
+      else v.material.visible = false
     })
 
     this.signGroup.forEach( s => {
@@ -150,10 +160,10 @@ export default class Day extends BasicThreeWithCam {
     let euroMiddleeast = this.addRibbon(europe.position, middleeast.position, 40, this.texture)
     let euroAmerica = this.addRibbon(europe.position, america.position, 40, this.texture)
 
-    let euroAsiaFlat = this.addRibbon(europe.flatPosition, asia.flatPosition, 40, this.texture, true)
-    let euroLatinFlat = this.addRibbon(europe.flatPosition, latin.flatPosition, 50, this.texture, true)
-    let euroMiddleeastFlat = this.addRibbon(europe.flatPosition, middleeast.flatPosition, 30, this.texture, true)
-    let euroAmericaFlat = this.addRibbon(europe.flatPosition, america.flatPosition, 50, this.texture, true)
+    let euroAsiaFlat = this.addRibbon(europe.flatPosition, asia.flatPosition, 40, this.texture, true, true)
+    let euroLatinFlat = this.addRibbon(europe.flatPosition, latin.flatPosition, 50, this.texture, true, true)
+    let euroMiddleeastFlat = this.addRibbon(europe.flatPosition, middleeast.flatPosition, 30, this.texture, true, true)
+    let euroAmericaFlat = this.addRibbon(europe.flatPosition, america.flatPosition, 50, this.texture, true, true)
 
     this.euroAsiaSign = this.addSign(euroAsia.apex)
     this.euroLatinSign = this.addSign(euroLatin.apex)
@@ -181,12 +191,14 @@ export default class Day extends BasicThreeWithCam {
     return euroAsiaSign
   }
 
-  addRibbon(pos1, pos2, width = 20, texture, isPerpendicular) {
+  addRibbon(pos1, pos2, width = 20, texture, isPerpendicular, isFlat = false) {
     let tmp = new RibbonObj(pos1, pos2, { width, texture, isPerpendicular })
     this.earth.group.add(tmp.group)
-    this.ribbonGroup.push(tmp.mesh)
+    if(isFlat) this.flatRibbonGroup.push(tmp.mesh)
+    else this.ribbonGroup.push(tmp.mesh)
     return tmp
   }
+
 
 
   renderTextureCanvas() {
@@ -217,9 +229,19 @@ export default class Day extends BasicThreeWithCam {
     )
   }
 
+  onClick(evt) {
+    this.setState({
+      mapView: !this.state.mapView
+    })
+  }
+
 
   render() {
-    let { canWidth, canHeight, width, height } = this.state
+    let { canWidth, canHeight, width, height, mapView } = this.state
+
+    this.earth.curViewToGlobe = !this.state.mapView
+
+    let displayTxt = mapView ? 'map view' : 'globe view'
 
     return(
       <div ref = { c => { this.container = c }}
@@ -231,6 +253,9 @@ export default class Day extends BasicThreeWithCam {
         onMouseMove={this.mouseMove}>
         { this.renderTextureCanvas() }
         { this.renderSignCanvas() }
+        <button
+          className="hsbcdemo5__button"
+          onClick={ this.onClick.bind(this) }>{ displayTxt }</button>
       </div>
     )
   }

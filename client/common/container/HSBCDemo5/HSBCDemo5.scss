@@ -1,0 +1,19 @@
+.hsbcdemo5 {
+
+
+  &__button {
+    display: block;
+    position: absolute;
+    left: 20px;
+    top: 50px;
+    width: 90px;
+    height: 30px;
+    text-transform: uppercase;
+    background: #333333;
+    color: #ffffff;
+    border-radius: 5px;
+    border-width: 0;
+    cursor: pointer;
+
+  }
+}

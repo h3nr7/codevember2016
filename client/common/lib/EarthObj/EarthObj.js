@@ -35,8 +35,11 @@ export default class EarthObj {
       targetHeight: 400.0
     }, opts)
 
+
+    this.curViewToGlobe =  true
     this.isLoaded = false
-    this.isFlattened = false
+    this.isNotRound = false
+    this.isFlat = false
     this.group = new THREE.Object3D()
     this.group.rotation.x = this.options.initialRotation.x
     this.group.rotation.y = this.options.initialRotation.y
@@ -258,7 +261,20 @@ export default class EarthObj {
     if(this.atmosphereMesh) {
       let { mixAmount } = this.earthUniform
 
+      if( this.curViewToGlobe ) {
+        if(mixAmount.value > 0) mixAmount.value -= 0.01
+        else mixAmount.value = 0.0
+      } else {
+        if( mixAmount.value < 1 ) mixAmount.value += 0.01
+        else mixAmount.value = 1.0
+      }
+
+
       if(mixAmount.value !== 0) {
+
+        this.isNotRound = true
+        if( mixAmount.value >= 0.95 ) this.isFlat = true
+        else this.isFlat = false
 
         Object.keys(this.cities).forEach(key => {
           let { mesh, position, flatPosition } = this.cities[key]
@@ -276,6 +292,8 @@ export default class EarthObj {
         }
 
       } else {
+        this.isFlat = false
+        this.isNotRound = false
         this.atmosphereMesh.rotation.y += 0.0002
         this.atmosphereMesh.rotation.x += 0.0002
 
